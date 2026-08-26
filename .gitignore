@@ -1,0 +1,21 @@
+# OS cruft
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+$RECYCLE.BIN/
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*~
+
+# This prototype has no build step — nothing here should ever appear, but
+# guard against a stray toolchain being added later.
+node_modules/
+dist/
+build/
+*.log
+.env
+.env.*

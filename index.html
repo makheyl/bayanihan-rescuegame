@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Terraqua Clash — 3D Physics-Based Multiplayer Animal Survival Arena</title>
+<meta name="description" content="Terraqua Clash: a physics-based animal survival arena built around a real-time Tide-Shift Mechanic, targeting SDG 14 (Life Below Water) and SDG 15 (Life on Land).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- =====================================================================
+     LANDING PAGE
+     The design was delivered as separate 1920×1080 layers, each with its
+     content already at its final composite position, so the page simply
+     stacks them. Buttons are cropped out of their own layer with sprite
+     background maths (see .menu-btn rules in css/styles.css).
+     ===================================================================== -->
+<div class="stage-wrap">
+  <main class="stage" id="stage">
+
+    <img class="layer layer--bg"    src="TERRAQUA_ELEMENTS/2.png" alt="" aria-hidden="true">
+    <img class="layer layer--chars" src="TERRAQUA_ELEMENTS/4.png" alt="" aria-hidden="true">
+    <img class="layer layer--logo"  src="TERRAQUA_ELEMENTS/3.png" alt="Terraqua Clash">
+
+    <h1 class="sr-only">Terraqua Clash — a physics-based multiplayer animal survival arena</h1>
+
+    <div class="stage-badge stage-badge--sdg">
+      <span class="sdg-dot sdg-14">14</span>
+      <span class="sdg-dot sdg-15">15</span>
+      <span>Life Below Water &amp; Life On Land</span>
+    </div>
+    <div class="stage-badge stage-badge--build">Prototype · Local Play</div>
+
+    <nav class="menu" id="menu" aria-label="Main menu">
+      <button class="menu-btn btn-play" id="btnPlay" type="button">
+        <span class="sr-only">Play Now — choose a habitat and start a match</span>
+      </button>
+      <button class="menu-btn btn-multiplayer" type="button" data-floater="fl-multiplayer">
+        <span class="sr-only">Multiplayer Lobbies — set up local players and AI opponents</span>
+      </button>
+      <button class="menu-btn btn-character" id="btnCharacter" type="button">
+        <span class="sr-only">Character Select — pick an animal for each player</span>
+      </button>
+      <button class="menu-btn btn-guide" type="button" data-floater="fl-guide">
+        <span class="sr-only">Survival Guide — how to play, controls, Tide-Shift and the SDG background</span>
+      </button>
+      <button class="menu-btn btn-settings" type="button" data-floater="fl-settings">
+        <span class="sr-only">Settings — audio, match length and visual options</span>
+      </button>
+      <button class="menu-btn btn-quit" type="button" data-floater="fl-quit">
+        <span class="sr-only">Quit</span>
+      </button>
+    </nav>
+
+  </main>
+</div>
+
+<!-- =====================================================================
+     FLOATER — MULTIPLAYER LOBBIES
+     ===================================================================== -->
+<div class="floater-root" id="fl-multiplayer" role="dialog" aria-modal="true" aria-labelledby="fl-mp-title" aria-hidden="true">
+  <div class="floater__scrim"></div>
+  <div class="floater">
+    <header class="floater__head">
+      <span class="floater__icon" aria-hidden="true">👥</span>
+      <div>
+        <div class="floater__title outlined" id="fl-mp-title">Multiplayer Lobbies</div>
+      </div>
+      <button class="floater__close" type="button" data-floater-close aria-label="Close">✕</button>
+    </header>
+
+    <div class="floater__body">
+      <div class="note note--warn">
+        <strong>This build runs local multiplayer</strong> — up to four players share one keyboard,
+        with AI filling any empty seats. The match loop and player state are kept separate from
+        input so a networked layer can be dropped in later without a rewrite.
+      </div>
+
+      <div class="field">
+        <div>
+          <div class="field__label">Local players</div>
+          <div class="field__hint">Humans sharing this keyboard</div>
+        </div>
+        <div class="field__control">
+          <div class="seg" id="segHumans" role="group" aria-label="Number of local players">
+            <button type="button" data-v="1">1</button>
+            <button type="button" data-v="2">2</button>
+            <button type="button" data-v="3">3</button>
+            <button type="button" data-v="4">4</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div>
+          <div class="field__label">AI opponents</div>
+          <div class="field__hint">Fills the remaining seats — four animals max</div>
+        </div>
+        <div class="field__control">
+          <div class="seg" id="segBots" role="group" aria-label="Number of AI opponents">
+            <button type="button" data-v="0">0</button>
+            <button type="button" data-v="1">1</button>
+            <button type="button" data-v="2">2</button>
+            <button type="button" data-v="3">3</button>
+          </div>
+        </div>
+      </div>
+
+      <h3>Seat assignments</h3>
+      <table class="ctrl-table" id="lobbyTable">
+        <thead><tr><th>Seat</th><th>Controls</th><th>Animal</th></tr></thead>
+        <tbody></tbody>
+      </table>
+
+      <p style="margin-top:.9em"><strong>Gamepads:</strong> plug one in and it takes over that seat automatically —
+      left stick to move, bottom face button to dash.</p>
+    </div>
+
+    <footer class="floater__foot">
+      <button class="tq-btn tq-btn--ghost" type="button" data-floater-close>Close</button>
+      <button class="tq-btn tq-btn--ghost" type="button" id="mpToCharacters">Change Animals</button>
+      <button class="tq-btn tq-btn--green" type="button" id="mpStart" data-autofocus>Start Match →</button>
+    </footer>
+  </div>
+</div>
+
+<!-- =====================================================================
+     FLOATER — SURVIVAL GUIDE  (how to play / controls / tide / SDG / species)
+     ===================================================================== -->
+<div class="floater-root" id="fl-guide" role="dialog" aria-modal="true" aria-labelledby="fl-guide-title" aria-hidden="true">
+  <div class="floater__scrim"></div>
+  <div class="floater">
+    <header class="floater__head floater__head--green">
+      <span class="floater__icon" aria-hidden="true">📗</span>
+      <div class="floater__title outlined" id="fl-guide-title">Survival Guide</div>
+      <button class="floater__close" type="button" data-floater-close aria-label="Close">✕</button>
+    </header>
+
+    <div class="floater__tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="how" aria-selected="true" data-autofocus>How to Play</button>
+      <button class="tab" role="tab" data-tab="controls" aria-selected="false">Controls</button>
+      <button class="tab" role="tab" data-tab="tide" aria-selected="false">Tide-Shift</button>
+      <button class="tab" role="tab" data-tab="power" aria-selected="false">Power-ups</button>
+      <button class="tab" role="tab" data-tab="sdg" aria-selected="false">SDG 14 &amp; 15</button>
+      <button class="tab" role="tab" data-tab="species" aria-selected="false">Species</button>
+    </div>
+
+    <div class="floater__body">
+
+      <section data-panel="how">
+        <h3>The one-sentence version</h3>
+        <p>Shove every other animal off the island before the timer runs out — while the island itself
+        keeps turning from land into water underneath you.</p>
+
+        <h3>Winning a round</h3>
+        <ul>
+          <li>There is <strong>no health and no damage</strong>. The whole fight is positioning: barge rivals
+              into deep water, or strand them in a biome that drains them.</li>
+          <li>You are out if you <strong>fall into deep water</strong> (the dark blue), or if your
+              <strong>stamina ring empties</strong> while you are stuck in the wrong biome.</li>
+          <li>Last animal standing wins immediately. If the timer expires with several still alive, the win
+              goes to the <strong>highest score</strong> — survival time plus knockouts you caused.</li>
+          <li>In the closing seconds the <strong>sea level rises for good</strong> and the island erodes from
+              its edges inward, so a stalemate cannot last.</li>
+        </ul>
+
+        <h3>Shoving</h3>
+        <p>Every collision transfers a push scaled by your <strong>Push</strong> stat and how fast you were
+        moving. Hold a direction and slam into someone to nudge them; use <strong>Dash</strong> for a
+        committed hit that sends light animals flying. Dash has a short cooldown, and missing leaves you
+        skidding — so it is a real risk near an edge.</p>
+      </section>
+
+      <section data-panel="controls" hidden>
+        <h3>Keyboard — four players, one keyboard</h3>
+        <table class="ctrl-table">
+          <thead><tr><th>Player</th><th>Move</th><th>Dash</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="player-dot" style="background:#FF6B5B"></span>Player 1</td>
+              <td><span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span></td>
+              <td><span class="kbd">Space</span></td>
+            </tr>
+            <tr>
+              <td><span class="player-dot" style="background:#4CC8DA"></span>Player 2</td>
+              <td><span class="kbd">↑</span><span class="kbd">←</span><span class="kbd">↓</span><span class="kbd">→</span></td>
+              <td><span class="kbd">Enter</span></td>
+            </tr>
+            <tr>
+              <td><span class="player-dot" style="background:#95DA51"></span>Player 3</td>
+              <td><span class="kbd">I</span><span class="kbd">J</span><span class="kbd">K</span><span class="kbd">L</span></td>
+              <td><span class="kbd">U</span></td>
+            </tr>
+            <tr>
+              <td><span class="player-dot" style="background:#FFD886"></span>Player 4</td>
+              <td><span class="kbd">8</span><span class="kbd">4</span><span class="kbd">5</span><span class="kbd">6</span> <em>(numpad)</em></td>
+              <td><span class="kbd">0</span> <em>(numpad)</em></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Gamepad</h3>
+        <p>Connect a controller and press a button — it claims the lowest free seat. Left stick moves,
+        the bottom face button dashes.</p>
+
+        <h3>During a match</h3>
+        <p><span class="kbd">P</span> or <span class="kbd">Esc</span> pauses ·
+           <span class="kbd">R</span> restarts the round ·
+           <span class="kbd">M</span> mutes audio</p>
+      </section>
+
+      <section data-panel="tide" hidden>
+        <h3>What Tide-Shift actually does</h3>
+        <p>The arena is not a flat platform with random puddles. Every tile has a fixed
+        <strong>elevation</strong>, and the match has a single <strong>sea level</strong> that rises and falls
+        in a slow cycle. Land is simply everything currently above that line.</p>
+        <p>Because the whole coastline moves at once, high ridges stay dry the longest and low
+        flats flood first — so the map has real geography you can learn and play around, rather than
+        tiles flipping at random.</p>
+
+        <div class="note note--sdg14">
+          <strong>Watch the banner.</strong> Two seconds before the water turns, the arena announces
+          <em>TIDE RISING</em> or <em>TIDE RECEDING</em> and the weather changes to match. That telegraph
+          is your window to reach the right ground.
+        </div>
+
+        <h3>Biome advantage</h3>
+        <ul>
+          <li><strong>Land animals</strong> move at full speed on land and lose stamina in water.</li>
+          <li><strong>Water animals</strong> are fastest in water and lose stamina on dry land.</li>
+          <li><strong>Amphibious animals</strong> never drain, but never get the speed bonus either.</li>
+        </ul>
+        <p>Your stamina ring sits under your feet. Empty it and you are eliminated — so being caught in the
+        wrong biome is just as lethal as being pushed off the edge, and a shove that strands someone
+        counts as a kill in slow motion.</p>
+
+        <h3>Rising seas</h3>
+        <p>For the last 30 seconds the <em>floor</em> of the tide climbs permanently. Ground that used to
+        resurface never does. The island shrinks from the outside in until there is barely a ridge left.</p>
+      </section>
+
+      <section data-panel="power" hidden>
+        <h3>Four pickups</h3>
+        <p>They spawn on the island every few seconds and expire if nobody grabs them. Walk over one to
+        use it instantly.</p>
+        <ul id="guidePowerList"></ul>
+        <p>Only one of each effect can run on you at a time, and picking up a second copy refreshes the
+        timer rather than stacking it.</p>
+      </section>
+
+      <section data-panel="sdg" hidden>
+        <h3>Why this game exists</h3>
+        <p>Most survival games are entertainment only. The concepts in
+        <strong>SDG 14 (Life Below Water)</strong> and <strong>SDG 15 (Life on Land)</strong> are usually
+        taught with static, text-heavy material that struggles to hold a younger audience. Terraqua Clash
+        puts the idea in the mechanic instead of in a paragraph.</p>
+
+        <div class="note note--sdg14">
+          <strong>SDG 14 — Life Below Water.</strong> Rising and encroaching water is not scenery here; it is
+          the thing that kills you. Marine species thrive exactly where terrestrial ones start drowning,
+          which is the point: the two systems are not separate.
+        </div>
+        <div class="note note--sdg15">
+          <strong>SDG 15 — Life On Land.</strong> Every habitat in Terrain Select is a real ecosystem under
+          real pressure, and the endgame — ground that floods and never comes back — is habitat loss
+          rendered as a game rule.
+        </div>
+
+        <h3>What a player should walk away with</h3>
+        <ul>
+          <li>Marine and terrestrial ecosystems are <strong>interdependent</strong>, not parallel.</li>
+          <li>Specialists lose ground when a habitat changes faster than they can adapt — the
+              generalist on the roster is the one who copes.</li>
+          <li>Habitat loss is rarely a single event. It is a slow ratchet, which is why the tide floor
+              only ever climbs.</li>
+        </ul>
+
+        <p style="opacity:.8"><em>Capstone context: BSIT, University of Perpetual Help System Laguna.
+        Pilot group — UPHSL student groups.</em></p>
+      </section>
+
+      <section data-panel="species" hidden>
+        <h3>Roster field notes</h3>
+        <p>Each animal carries a real conservation note, shown again on the results screen after a match.</p>
+        <div id="guideSpeciesList"></div>
+      </section>
+
+    </div>
+
+    <footer class="floater__foot">
+      <button class="tq-btn tq-btn--ghost" type="button" data-floater-close>Close</button>
+      <button class="tq-btn tq-btn--green" type="button" id="guidePlay">Play Now →</button>
+    </footer>
+  </div>
+</div>
+
+<!-- =====================================================================
+     FLOATER — SETTINGS
+     ===================================================================== -->
+<div class="floater-root" id="fl-settings" role="dialog" aria-modal="true" aria-labelledby="fl-set-title" aria-hidden="true">
+  <div class="floater__scrim"></div>
+  <div class="floater floater--sm">
+    <header class="floater__head">
+      <span class="floater__icon" aria-hidden="true">⚙️</span>
+      <div class="floater__title outlined" id="fl-set-title">Settings</div>
+      <button class="floater__close" type="button" data-floater-close aria-label="Close">✕</button>
+    </header>
+
+    <div class="floater__body">
+      <div class="field">
+        <div>
+          <div class="field__label">Volume</div>
+          <div class="field__hint">All sound is synthesised — no audio files ship with the build</div>
+        </div>
+        <div class="field__control">
+          <input type="range" id="setVolume" min="0" max="100" step="5" aria-label="Volume" data-autofocus>
+          <span class="field__value" id="setVolumeVal">60%</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <div><div class="field__label">Mute</div></div>
+        <div class="field__control">
+          <div class="seg" id="setMuted" role="group" aria-label="Mute">
+            <button type="button" data-v="0">On</button>
+            <button type="button" data-v="1">Muted</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div>
+          <div class="field__label">Round length</div>
+          <div class="field__hint">Seas start rising for good in the final 30s</div>
+        </div>
+        <div class="field__control">
+          <div class="seg" id="setRound" role="group" aria-label="Round length">
+            <button type="button" data-v="60">60s</button>
+            <button type="button" data-v="90">90s</button>
+            <button type="button" data-v="120">120s</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div>
+          <div class="field__label">Tide speed</div>
+          <div class="field__hint">Multiplier on each habitat's own tide cycle</div>
+        </div>
+        <div class="field__control">
+          <div class="seg" id="setTide" role="group" aria-label="Tide speed">
+            <button type="button" data-v="0.7">Calm</button>
+            <button type="button" data-v="1">Normal</button>
+            <button type="button" data-v="1.5">Wild</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div><div class="field__label">Weather particles</div>
+          <div class="field__hint">Turn off on slower machines</div></div>
+        <div class="field__control">
+          <div class="seg" id="setParticles" role="group" aria-label="Weather particles">
+            <button type="button" data-v="1">On</button><button type="button" data-v="0">Off</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div><div class="field__label">Screen shake</div></div>
+        <div class="field__control">
+          <div class="seg" id="setShake" role="group" aria-label="Screen shake">
+            <button type="button" data-v="1">On</button><button type="button" data-v="0">Off</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div><div class="field__label">Player name tags</div></div>
+        <div class="field__control">
+          <div class="seg" id="setNames" role="group" aria-label="Player name tags">
+            <button type="button" data-v="1">On</button><button type="button" data-v="0">Off</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="floater__foot">
+      <button class="tq-btn tq-btn--ghost tq-btn--sm" type="button" id="setReset">Reset to defaults</button>
+      <button class="tq-btn" type="button" data-floater-close>Done</button>
+    </footer>
+  </div>
+</div>
+
+<!-- =====================================================================
+     FLOATER — QUIT
+     ===================================================================== -->
+<div class="floater-root" id="fl-quit" role="dialog" aria-modal="true" aria-labelledby="fl-quit-title" aria-hidden="true">
+  <div class="floater__scrim"></div>
+  <div class="floater floater--sm">
+    <header class="floater__head floater__head--red">
+      <span class="floater__icon" aria-hidden="true">🚪</span>
+      <div class="floater__title outlined" id="fl-quit-title">Leave the island?</div>
+      <button class="floater__close" type="button" data-floater-close aria-label="Close">✕</button>
+    </header>
+    <div class="floater__body">
+      <p>Thanks for playing the Terraqua Clash prototype.</p>
+      <div class="note note--sdg14">
+        <strong>Before you go:</strong> the Arctic sea ice that Nanuq hunts from is retreating by
+        roughly 13% per decade — and six of the seven sea turtle species Tala belongs to are threatened.
+      </div>
+      <p id="quitNote" style="opacity:.75; font-size:.85rem"></p>
+    </div>
+    <footer class="floater__foot">
+      <button class="tq-btn tq-btn--ghost" type="button" data-floater-close data-autofocus>Keep Playing</button>
+      <button class="tq-btn tq-btn--red" type="button" id="quitConfirm">Quit</button>
+    </footer>
+  </div>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/animals.js"></script>
+<script src="js/terrains.js"></script>
+<script src="js/powerups.js"></script>
+<script src="js/landing.js"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Character Select — Terraqua Clash</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  /* seat strip along the top of the grid */
+  .seats{
+    display:flex; gap:.6rem; flex-wrap:wrap;
+    margin-bottom:clamp(.9rem,2vw,1.4rem);
+  }
+  .seat{
+    position:relative;
+    display:flex; align-items:center; gap:.6rem;
+    padding:.5rem .9rem .5rem .55rem;
+    border-radius:var(--r-pill);
+    border:4px solid var(--ink);
+    background:linear-gradient(180deg,#fff,var(--cream-2));
+    box-shadow:0 5px 0 rgba(20,49,63,.5);
+    transition:transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s ease;
+  }
+  .seat[aria-current="true"]{
+    transform:translateY(-4px);
+    box-shadow:0 0 0 4px var(--gold-2), 0 9px 0 rgba(20,49,63,.5);
+  }
+  .seat[data-bot="true"]{ opacity:.72; }
+  .seat__avatar{
+    width:clamp(38px,4.6vw,52px); height:clamp(38px,4.6vw,52px);
+    border-radius:50%; border:3px solid var(--ink); flex:none;
+    background:linear-gradient(180deg,var(--sky-2),var(--sea));
+  }
+  .seat__meta{ line-height:1.15; }
+  .seat__who{ font-family:var(--font-display); font-weight:800; font-size:.9rem; color:var(--ink); }
+  .seat__pick{ font-size:.78rem; font-weight:800; color:var(--ink-soft); }
+  .seat__dot{
+    width:.7rem; height:.7rem; border-radius:50%;
+    border:2.5px solid var(--ink); flex:none;
+  }
+  .card__art canvas{ animation:cardFloat 3.6s ease-in-out infinite; }
+  @keyframes cardFloat{
+    0%,100%{ transform:translateY(0) }
+    50%    { transform:translateY(-3.5%) }
+  }
+  .card__src{
+    position:absolute; left:.45rem; bottom:.45rem; z-index:2;
+    font-size:.6rem; font-weight:900; text-transform:uppercase; letter-spacing:.03em;
+    padding:.25em .55em; border-radius:var(--r-pill);
+    background:rgba(255,255,255,.85); border:2px solid var(--ink); color:var(--ink-soft);
+  }
+  .seat-badge{
+    position:absolute; left:.5rem; top:.5rem; z-index:3;
+    display:flex; gap:.25rem;
+  }
+  .seat-badge span{
+    width:1.5rem; height:1.5rem; border-radius:50%;
+    display:grid; place-items:center;
+    font-weight:900; font-size:.72rem; color:#fff;
+    border:2.5px solid var(--ink);
+    text-shadow:0 1px 0 rgba(0,0,0,.4);
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header class="topbar">
+    <div class="topbar__logo" role="img" aria-label="Terraqua Clash"></div>
+    <div>
+      <div class="topbar__title outlined">Character Select</div>
+      <div class="topbar__sub">Land, water or amphibious — your class decides who the tide is kind to</div>
+    </div>
+    <button class="tq-btn tq-btn--ghost tq-btn--sm" type="button" id="btnBack">← Menu</button>
+  </header>
+
+  <div class="page__body">
+    <div class="seats" id="seats" role="group" aria-label="Player seats"></div>
+
+    <div class="section-head">
+      <h2 class="outlined">Roster</h2>
+      <p id="rosterHint">Click a seat above, then pick its animal.</p>
+    </div>
+
+    <div class="card-grid" id="roster"></div>
+  </div>
+
+  <footer class="page__footer">
+    <div class="footer__hint">
+      <span class="kbd">←</span><span class="kbd">→</span> browse ·
+      <span class="kbd">Enter</span> assign ·
+      <span class="kbd">Tab</span> next seat
+    </div>
+    <div style="display:flex; gap:.6rem; flex-wrap:wrap">
+      <button class="tq-btn tq-btn--ghost" type="button" id="btnRandom">🎲 Randomise</button>
+      <button class="tq-btn tq-btn--green" type="button" id="btnConfirm">Choose Habitat →</button>
+    </div>
+  </footer>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/animals.js"></script>
+<script src="js/terrains.js"></script>
+<script src="js/powerups.js"></script>
+<script src="js/character-select.js"></script>
+</body>
+</html>
