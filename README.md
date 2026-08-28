@@ -1,201 +1,148 @@
-# Terraqua Clash — Landing Page + Core Gameplay Prototype
+# Bayanihan: Disaster Rescue
 
-A physics-based multiplayer animal survival arena built around a real-time
-**Tide-Shift Mechanic**, targeting **SDG 14 (Life Below Water)** and
-**SDG 15 (Life on Land)**.
+A 2D top-down disaster-response game about a Filipino youth volunteer taking a
+bangka out into a flooded coastal barangay — pulling people off rooftops, out of
+the current and out from behind debris, and ferrying them to the evacuation
+center before the water takes the low houses.
 
-BSIT capstone · University of Perpetual Help System Laguna · pilot group: UPHSL student groups.
+Targets **SDG 11 (Sustainable Cities and Communities)**, specifically disaster
+resilience and community preparedness.
+
+BSIT capstone · University of Perpetual Help System Laguna.
 
 ---
 
 ## Running it
 
-Open **`index.html`** in a browser. That is the whole install step — no build,
-no server, no dependencies. Plain HTML5 + CSS3 + vanilla JS.
+Open **`index.html`** in a browser. That is the entire install step — no build,
+no server, no dependencies. Plain HTML5 + CSS3 + vanilla JS with a Canvas2D
+arena.
 
-Because it must run from `file://`, the build deliberately avoids anything that
+Because it must run from `file://`, the build deliberately avoids what that
 origin blocks:
 
 * classic `<script>` tags only — ES modules are refused by CORS on `file://`
-* no `fetch()` of local JSON; all data lives in JS
-* state moves between pages in the **URL query string**, with `localStorage`
-  only as a convenience mirror (it can throw on `file://` origins)
+* no `fetch()` of local JSON — the barangay layouts are generated in
+  `js/maps.js` from each mission's seed instead of loaded from
+  `assets/maps/*.json`
+* **no `localStorage` anywhere** — settings and progress live in memory for the
+  session. `js/state.js` marks the two `>>> PERSIST <<<` points where a
+  persistence layer would slot in.
 
-Google Fonts are linked but every rule has a real fallback stack, so it looks
-correct offline too.
+Google Fonts are linked (Press Start 2P for the display face) but every rule has
+a real fallback stack, so it renders correctly offline.
 
 ---
 
-## ⚠️ Asset finding — `/TERRAQUA_ELEMENTS/` is not an animal roster
+## ⚠️ The reference art is from a different project
 
-The build brief assumed each `.png` in `/TERRAQUA_ELEMENTS/` was one animal.
-It is not. Measuring the files shows all nine are **1920 × 1080 transparent
-layers of the landing page**, each with its content already at its final
-composite position:
+`prompt.md` describes *Bayanihan: Disaster Rescue* and points at
+`/BAYANIHAN_ELEMENTS/` for sprites. That folder is the renamed
+`TERRAQUA_ELEMENTS/` from the previous capstone concept, and everything in it is
+**Terraqua Clash** art:
 
-| File | Alpha bounding box | What it actually is |
-|---|---|---|
-| `2.png` | full frame | beach background |
-| `3.png` | 494,17 · 890×380 | "TERRAQUA CLASH" logo |
-| `4.png` | 2,274 · full width | the four characters |
-| `5.png` | 789,448 · 343×84 | **PLAY NOW** button |
-| `6.png` | 790,547 · 337×76 | **MULTIPLAYER LOBBIES** button |
-| `7.png` | 793,638 · 335×76 | **CHARACTER SELECT** button |
-| `8.png` | 793,728 · 334×78 | **SURVIVAL GUIDE** button |
-| `9.png` | 858,827 · 200×68 | **SETTINGS** button |
-| `10.png` | 789,918 · 346×62 | **QUIT** button |
-| `REFERENCE (SCREENSHOT).png` | full frame | the composite |
+| File | What it actually is |
+|---|---|
+| `2.png` | Sunny beach background, 1920×1080 |
+| `3.png` | A logo reading "TERRAQUA CLASH" |
+| `4.png` | Polar bear, penguin, shiba, brown bear |
+| `5.png` – `10.png` | Buttons: PLAY NOW, MULTIPLAYER LOBBIES, CHARACTER SELECT, SURVIVAL GUIDE, SETTINGS, QUIT |
+| `REFERENCE (SCREENSHOT).png` | The composite title screen |
 
-Two consequences:
+`GameOverview_Screenshot.png` is likewise the Terraqua Clash overview (SDG 14/15,
+3D physics multiplayer animal arena).
 
-1. **The landing page is pixel-exact**, because it simply stacks the delivered
-   layers and crops each button out of its own layer with sprite
-   `background-size` / `background-position` maths. The precomputed values are
-   in `css/styles.css` under `.menu-btn`.
-2. **The roster was built from the characters actually drawn in the art** —
-   the polar bear, penguin, shiba and brown bear in `4.png`, plus the raccoon
-   and husky visible in the button icons — topped up with two SDG-14 species
-   from the brief's fallback list so land and water are evenly matched. Each
-   card is labelled with where its character came from.
+Shipping a cartoon polar bear and a "TERRAQUA CLASH" wordmark inside a Filipino
+flood-rescue capstone would be wrong, so per §31/§33 of the brief the build takes
+the **palette and composition** from that reference and draws everything else
+procedurally:
 
-The palette in `css/styles.css` is sampled directly from these layers, so every
-page matches the landing art rather than approximating it.
+* **Palette sampled from the reference** — sky `#BFE7FB→#7FC4E8`, mountains
+  `#8FC3E8 / #5FA3D9 / #3F87C9`, sea `#1489B4 / #2BB4D4 / #5FD6E6`, foam
+  `#E4FAFF`, sand `#F7CE6E / #E9B44E`, foliage `#35A83A / #1F7B2C`, trunk
+  `#C98A52`, rock `#5D6E79`; plus the brief's amber button family
+  `#F6A623` with a `#9E5E08` bevel and `#4A2A12` text.
+* **Title scene** — inline SVG in `index.html`: palms and foliage upper-left, a
+  *bahay kubo* carried by five villagers upper-right, beach and water across the
+  bottom third, with floodwater lapping over the sand.
+* **Every game sprite** — boat, residents, roofs, trees, debris, live wires,
+  evacuation center and all eight supply icons are drawn on canvas in
+  `js/assets.js`.
+
+The previous Terraqua Clash build is preserved on the local branch
+`terraqua-clash-archive` and at its own remote (`terraqua-archive`).
 
 ---
 
 ## Structure
 
 ```
-index.html                landing page (layered art + floaters)
-character-select.html     roster grid, one seat per player
-terrain-select.html       habitat picker
-game.html                 the arena
+index.html                 all six screens (SPA-style switching) + floaters
 css/
-  styles.css              theme tokens, landing, shared UI
-  game.css                arena shell, HUD, overlays
+  styles.css               palette vars, typography, buttons, floaters
+  screens.css              per-screen layout
 js/
-  core.js                 utils, settings, match hand-off, SFX, floaters
-  animals.js              roster + the shared creature renderer
-  terrains.js             five habitats, height fields, terrain painting
-  powerups.js             the four pickups
-  landing.js              landing-page wiring
-  character-select.js
-  terrain-select.js
-  game.js                 loop, physics, tide, hazards, AI, render
-TERRAQUA_ELEMENTS/        design layers (see above)
+  state.js                 session state, seeded RNG, math helpers
+  audio.js                 Web Audio synthesis — no audio files ship
+  assets.js                procedural sprite library + image-loader seam
+  supplies.js              the eight supplies and their field effects
+  missions.js              the three missions and every tuning number
+  maps.js                  seeded barangay generator + tile rules
+  rescue.js                roster, triage tags, pickup rules, timers
+  hud.js                   seats, water gauge, hotbar, prompts, radio arrow
+  render.js                the whole paint pass
+  game.js                  lifecycle, fixed-timestep loop, boat physics, weather
+  report.js                after-action scoring + preparation linkage
+  preparation.js           supply grid, capacity slots, loadout state
+  mission-select.js        three cards, gated progression
+  landing.js               title screen wiring + rain
+  main.js                  router, floaters, settings, touch, boot
+assets/maps/               README only — layouts are generated, see above
+assets/audio/              README only — all audio is synthesised
+BAYANIHAN_ELEMENTS/        delivered reference art (not shipped as sprites)
 ```
 
-No `/assets/` folder: terrain previews and every creature are drawn
-procedurally on canvas, and all audio is synthesised, so the build ships with
-no binary assets beyond the supplied design layers.
+---
+
+## The loop
+
+1. **Mission Select** — three missions, played in order, each unlocking the next.
+2. **Preparation Phase** — 4 slots on Mission 1, 5 on the later two, and eight
+   things worth taking. You are never blocked from packing badly.
+3. **The mission** — pilot the bangka, take people aboard three at a time, ferry
+   them to the evacuation center, race the rising water.
+4. **After-Action Report** — scores the run and names the link between what you
+   packed and what happened. Retry returns to the Preparation Phase, not into
+   the mission.
+
+**Rescue conditions.** On a roof: just get there. In open water: needs the
+**Salbabida**. Behind debris: needs the **Lubid**. Injured: needs the **Botika**,
+as a two-second hold. Nothing is a hard fail — a missing item makes a run much
+harder, not impossible.
+
+**The clock is the flood.** Instead of a countdown, the waterline climbs and
+progressively submerges the low roofs. A roof floods visibly from `elev - 0.22`
+and goes under at `elev`, so there is roughly 45 seconds of warning before
+anyone standing on it is lost.
+
+**Controls.** WASD or arrows steer · `Shift` sprints · `Space` / `E` is the
+context action · `1`–`5` use packed supplies · `Esc` pauses. Touch controls
+(virtual stick + action buttons) appear automatically on touch devices.
 
 ---
 
-## Controls
+## Status
 
-| Player | Move | Dash |
-|---|---|---|
-| 1 | `W` `A` `S` `D` | `Space` |
-| 2 | Arrow keys | `Enter` |
-| 3 | `I` `J` `K` `L` | `U` |
-| 4 | Numpad `8` `4` `5` `6` | Numpad `0` |
+Every screen, system and module described above is implemented and wired.
 
-A connected gamepad claims its seat automatically — left stick moves, bottom
-face button dashes.
+**Known issue — boat collision wedging.** A headless simulation harness
+(`node` + a BFS-pathfinding pilot driving the real game modules) shows the boat
+jamming against geometry: 150–190 stuck events per mission and an average speed
+of 25–49 px/s against a 178 px/s cap. Missions therefore tend to end on the
+flood timer with low rescue counts rather than on a cleared roster, and the
+2–4 minute target is not yet met. `unstick()` in `js/game.js` recovers the hull
+when it ends a step *inside* geometry, but something is still stalling it — this
+was mid-diagnosis when the build was committed and is the next thing to fix.
 
-In a match: `P` / `Esc` pause · `R` restart · `M` mute.
-
----
-
-## How the game works
-
-**No health, no damage.** The entire fight is positioning: shove rivals into
-deep water, or strand them in a biome that drains them.
-
-### Tide-Shift
-
-The arena is not a flat platform with random puddles. Every tile has a fixed
-**elevation** and the match has a single **sea level** that rises and falls on
-a cycle. Land is whatever is currently above that line, so the whole coastline
-moves at once — high ridges stay dry longest, low flats flood first, and the
-map has real geography you can learn.
-
-Height fields are normalised to **percentile rank**, which is why each habitat
-can *declare* its land/water split (`mix: { deep, landMid, tideSwing }`) and
-get it exactly, instead of it emerging by luck from sine coefficients. The
-island shape stays organic because the remap preserves tile ordering.
-
-For the last 30 seconds the tide *floor* climbs permanently and the island
-erodes from the edges inward. That is the shrinking safe zone, and it doubles
-as the SDG 14 message: the ground disappears as the sea rises.
-
-### Classes
-
-| Class | On land | In water |
-|---|---|---|
-| Land | full speed, recovers | slow, drains |
-| Water | slow, drains | fastest, recovers |
-| Amphibious | slightly reduced, recovers | normal, recovers |
-
-Stamina drains at 7.2/s — a full bar lasts ~14s, deliberately longer than the
-fastest tide cycle (9s), so being caught out is a scramble rather than an
-unanswerable loss. Empty it and you are eliminated, so a shove that strands
-someone is a kill in slow motion.
-
-### Habitats
-
-| Habitat | SDG | Land at mid tide | Tide | Hazard |
-|---|---|---|---|---|
-| Coral Reef | 14 | 34% | 9s | rip currents |
-| Mangrove Delta | 14 + 15 | 50% | 12s | root pillars |
-| Arctic Ice Shelf | 14 | 66% | 14s | floes crumble permanently |
-| Savanna Waterhole | 15 | 64% | 15s | geysers |
-| Rainforest Basin | 15 | 52% | 11s | falling timber |
-
-### Power-ups
-
-Speed Surge · Tidal Slam · Kelp Shield · Deep Freeze. Small on purpose so each
-reads instantly on screen.
-
----
-
-## Where networked play would slot in
-
-The brief asked for local multiplayer now, structured so a networked layer can
-be added later without a rewrite. In `js/game.js` the loop is
-**`readInput` → `simulate` → `render`**, and all player state lives in plain
-objects in `state.players`. A network layer replaces `readInput` and reconciles
-`state.players`; the simulation and renderer do not need to change. The fixed
-1248 × 702 world (physics never depends on canvas size) and the deterministic,
-seeded height fields both exist to make that step viable.
-
----
-
-## Verification
-
-The prototype was tested headlessly rather than by eye alone — a DOM/Canvas
-stub runs the real loop in Node, plus real browser screenshots of every page.
-Bugs this caught and that are now fixed:
-
-* **Stamina sign inversion.** The class table documented "negative
-  regenerates" but the sim did `stamina += sta * dt`, so every regen value
-  drained instead. Every animal died in ~4 seconds regardless of play. The
-  table now uses the natural convention: `sta` is simply the rate of change.
-* **Arctic had 3% water and savanna 4%,** leaving water animals dead on
-  arrival. Fixed by the percentile normalisation described above.
-* **Class-blind spawns** dropped water animals on the driest tile on the map.
-* **The island rendered as a chainmail lattice** — land is a union of
-  overlapping circles, and `stroke()` on such a path outlines *every* circle
-  rather than the silhouette. Outlines are now drawn by filling slightly
-  larger copies of the path behind it.
-* **Stat bars were invisible** — `.stat__fill` is a `<span>`, and an inline
-  element ignores `width`/`height`.
-
-### Known limitations
-
-* Rounds between four AI opponents can end well before the timer (12–80s
-  observed); the AI hunts edges aggressively. Human play is slower.
-* AI is a steering-and-scoring heuristic, not a planner — it will not set up
-  multi-step traps.
-* The arena is Canvas2D top-down, per the brief's instruction to get the
-  physics feel right before attempting a 3D pass.
+Balance numbers, roster composition and supply gating are all verifiable by
+re-running that harness.

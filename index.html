@@ -2,430 +2,743 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Terraqua Clash — 3D Physics-Based Multiplayer Animal Survival Arena</title>
-<meta name="description" content="Terraqua Clash: a physics-based animal survival arena built around a real-time Tide-Shift Mechanic, targeting SDG 14 (Life Below Water) and SDG 15 (Life on Land).">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Bayanihan: Disaster Rescue — SDG 11 Flood Rescue Prototype</title>
+<meta name="description" content="Bayanihan: Disaster Rescue — a 2D top-down flood-rescue game about preparation, triage and community. BSIT capstone, UPHSL. SDG 11: Sustainable Cities and Communities.">
+<meta name="theme-color" content="#7FC4E8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/screens.css">
 </head>
 <body>
 
+<div id="app">
+
 <!-- =====================================================================
-     LANDING PAGE
-     The design was delivered as separate 1920×1080 layers, each with its
-     content already at its final composite position, so the page simply
-     stacks them. Buttons are cropped out of their own layer with sprite
-     background maths (see .menu-btn rules in css/styles.css).
+     SCREEN 1 — TITLE
+     The delivered reference art belongs to a different project, so the
+     coastal scene is drawn here as inline SVG using the palette sampled
+     from it: sky blue, teal water, sand, foliage green. Composition
+     follows the brief — palms upper-left, a bahay kubo carried by
+     villagers upper-right, water across the bottom third.
      ===================================================================== -->
-<div class="stage-wrap">
-  <main class="stage" id="stage">
+<section class="screen is-active" id="screen-title" aria-label="Title screen">
+  <div class="title-stage">
 
-    <img class="layer layer--bg"    src="TERRAQUA_ELEMENTS/2.png" alt="" aria-hidden="true">
-    <img class="layer layer--chars" src="TERRAQUA_ELEMENTS/4.png" alt="" aria-hidden="true">
-    <img class="layer layer--logo"  src="TERRAQUA_ELEMENTS/3.png" alt="Terraqua Clash">
+    <svg class="title-scene" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#BFE7FB"/>
+          <stop offset="45%"  stop-color="#9BD6F2"/>
+          <stop offset="100%" stop-color="#7FC4E8"/>
+        </linearGradient>
+        <linearGradient id="seaG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#1489B4"/>
+          <stop offset="45%"  stop-color="#2BB4D4"/>
+          <stop offset="100%" stop-color="#5FD6E6"/>
+        </linearGradient>
+        <linearGradient id="sandG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FBE1A0"/>
+          <stop offset="100%" stop-color="#E9B44E"/>
+        </linearGradient>
+        <radialGradient id="sun" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0%" stop-color="#FFF6DA" stop-opacity=".95"/>
+          <stop offset="100%" stop-color="#FFF6DA" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
 
-    <h1 class="sr-only">Terraqua Clash — a physics-based multiplayer animal survival arena</h1>
+      <!-- sky + sun -->
+      <rect width="1920" height="1080" fill="url(#sky)"/>
+      <circle cx="1180" cy="150" r="290" fill="url(#sun)"/>
 
-    <div class="stage-badge stage-badge--sdg">
-      <span class="sdg-dot sdg-14">14</span>
-      <span class="sdg-dot sdg-15">15</span>
-      <span>Life Below Water &amp; Life On Land</span>
-    </div>
-    <div class="stage-badge stage-badge--build">Prototype · Local Play</div>
+      <!-- storm front rolling in from the left -->
+      <g fill="#8FA6B4" opacity=".5">
+        <ellipse cx="150" cy="130" rx="230" ry="86"/>
+        <ellipse cx="330" cy="105" rx="180" ry="70"/>
+        <ellipse cx="30"  cy="185" rx="200" ry="80"/>
+      </g>
+      <g fill="#6B8393" opacity=".38">
+        <ellipse cx="240" cy="160" rx="210" ry="66"/>
+        <ellipse cx="470" cy="140" rx="140" ry="50"/>
+      </g>
 
-    <nav class="menu" id="menu" aria-label="Main menu">
-      <button class="menu-btn btn-play" id="btnPlay" type="button">
-        <span class="sr-only">Play Now — choose a habitat and start a match</span>
-      </button>
-      <button class="menu-btn btn-multiplayer" type="button" data-floater="fl-multiplayer">
-        <span class="sr-only">Multiplayer Lobbies — set up local players and AI opponents</span>
-      </button>
-      <button class="menu-btn btn-character" id="btnCharacter" type="button">
-        <span class="sr-only">Character Select — pick an animal for each player</span>
-      </button>
-      <button class="menu-btn btn-guide" type="button" data-floater="fl-guide">
-        <span class="sr-only">Survival Guide — how to play, controls, Tide-Shift and the SDG background</span>
-      </button>
-      <button class="menu-btn btn-settings" type="button" data-floater="fl-settings">
-        <span class="sr-only">Settings — audio, match length and visual options</span>
-      </button>
-      <button class="menu-btn btn-quit" type="button" data-floater="fl-quit">
-        <span class="sr-only">Quit</span>
-      </button>
+      <!-- fair-weather clouds -->
+      <g fill="#F4FBFF">
+        <ellipse cx="1500" cy="128" rx="132" ry="50"/>
+        <ellipse cx="1592" cy="150" rx="104" ry="42"/>
+        <ellipse cx="1408" cy="156" rx="96"  ry="38"/>
+        <ellipse cx="880"  cy="96"  rx="112" ry="42"/>
+        <ellipse cx="962"  cy="116" rx="86"  ry="34"/>
+      </g>
+
+      <!-- distant mountains -->
+      <path fill="#8FC3E8" d="M0 470 L210 316 L360 424 L520 300 L700 452 L860 356 L1010 470 Z"/>
+      <path fill="#5FA3D9" d="M760 470 L920 336 L1080 448 L1230 344 L1420 470 Z"/>
+      <path fill="#3F87C9" d="M1240 470 L1400 372 L1560 448 L1700 380 L1920 470 L1920 486 L1240 486 Z"/>
+
+      <!-- open sea -->
+      <rect y="468" width="1920" height="200" fill="#1489B4"/>
+      <rect y="500" width="1920" height="580" fill="url(#seaG)"/>
+
+      <!-- sand strip + wet-sand curve (bottom third) -->
+      <path fill="url(#sandG)" d="M0 852 C 300 806, 640 892, 980 858 C 1300 826, 1620 892, 1920 848 L1920 1080 L0 1080 Z"/>
+      <path fill="#E4FAFF" opacity=".85" d="M0 848 C 300 802, 640 888, 980 854 C 1300 822, 1620 888, 1920 844 L1920 866 C 1620 910, 1300 848, 980 880 C 640 914, 300 828, 0 874 Z"/>
+      <path fill="#5FD6E6" opacity=".55" d="M0 792 C 340 758, 700 826, 1040 796 C 1340 770, 1640 826, 1920 788 L1920 812 C 1640 850, 1340 794, 1040 820 C 700 850, 340 782, 0 816 Z"/>
+
+      <!-- floodwater lapping over the sand: the barangay is going under -->
+      <path fill="#3E92A8" opacity=".42" d="M0 928 C 360 898, 700 962, 1060 934 C 1380 910, 1660 964, 1920 930 L1920 1080 L0 1080 Z"/>
+      <path fill="#2A6E80" opacity=".3"  d="M0 998 C 400 970, 760 1026, 1120 1000 C 1440 978, 1680 1024, 1920 998 L1920 1080 L0 1080 Z"/>
+
+      <!-- ============ PALMS + FOLIAGE, UPPER LEFT ============ -->
+      <g>
+        <!-- palm A -->
+        <path d="M300 880 C 286 700, 276 570, 246 434 L286 428 C 316 566, 328 704, 340 880 Z" fill="#C98A52"/>
+        <path d="M300 880 C 292 720, 286 600, 262 470 L276 466 C 300 598, 310 720, 318 880 Z" fill="#9C6335" opacity=".45"/>
+        <g fill="#35A83A">
+          <path d="M266 430 C 150 380, 92 424, 60 486 C 130 424, 200 424, 264 452 Z"/>
+          <path d="M266 430 C 160 340, 96 328, 44 348 C 132 356, 206 396, 262 442 Z"/>
+          <path d="M266 430 C 300 316, 262 250, 200 214 C 250 288, 258 358, 258 430 Z"/>
+          <path d="M266 430 C 380 352, 452 366, 494 410 C 404 384, 330 400, 272 444 Z"/>
+          <path d="M266 430 C 396 428, 462 476, 486 540 C 414 476, 336 456, 268 452 Z"/>
+        </g>
+        <g fill="#1F7B2C" opacity=".55">
+          <path d="M266 430 C 176 388, 118 412, 82 462 C 148 418, 208 424, 264 448 Z"/>
+          <path d="M266 430 C 372 366, 434 380, 470 416 C 396 396, 332 408, 272 444 Z"/>
+        </g>
+        <circle cx="252" cy="452" r="15" fill="#8B5E2E"/>
+        <circle cx="286" cy="462" r="13" fill="#8B5E2E"/>
+
+        <!-- palm B (shorter, behind) -->
+        <path d="M470 880 C 462 742, 456 640, 436 546 L466 542 C 486 638, 494 744, 502 880 Z" fill="#B87E48"/>
+        <g fill="#2E9A35">
+          <path d="M450 544 C 356 500, 306 534, 282 584 C 340 534, 398 536, 448 560 Z"/>
+          <path d="M450 544 C 366 470, 316 462, 276 480 C 348 486, 406 518, 448 554 Z"/>
+          <path d="M450 544 C 476 452, 448 400, 400 372 C 438 432, 444 488, 444 544 Z"/>
+          <path d="M450 544 C 542 482, 600 494, 632 530 C 560 508, 500 520, 454 556 Z"/>
+          <path d="M450 544 C 552 544, 604 582, 622 632 C 566 582, 504 566, 452 562 Z"/>
+        </g>
+
+        <!-- shrubs -->
+        <g fill="#43C24A">
+          <path d="M120 884 L146 790 L172 884 Z"/><path d="M156 888 L184 782 L212 888 Z"/>
+          <path d="M196 890 L222 800 L248 890 Z"/>
+          <path d="M540 892 L566 812 L592 892 Z"/><path d="M576 894 L602 806 L628 894 Z"/>
+        </g>
+      </g>
+
+      <!-- ============ BAHAY KUBO CARRIED BY VILLAGERS, UPPER RIGHT ============ -->
+      <g transform="translate(1236 300) scale(1.12)">
+        <!-- roof -->
+        <path d="M40 150 L230 40 L420 150 Z" fill="#D9A45B"/>
+        <path d="M40 150 L230 40 L420 150 Z" fill="none" stroke="#A9762F" stroke-width="7" stroke-linejoin="round"/>
+        <g stroke="#A9762F" stroke-width="4" opacity=".7">
+          <path d="M92 150 L230 70"/><path d="M144 150 L230 100"/>
+          <path d="M368 150 L230 70"/><path d="M316 150 L230 100"/>
+        </g>
+        <!-- body -->
+        <rect x="98" y="150" width="264" height="128" fill="#EBC98B"/>
+        <rect x="98" y="150" width="264" height="128" fill="none" stroke="#A9762F" stroke-width="6"/>
+        <g stroke="#C9A25E" stroke-width="3" opacity=".8">
+          <path d="M98 182 H362"/><path d="M98 214 H362"/><path d="M98 246 H362"/>
+        </g>
+        <!-- window + door -->
+        <rect x="132" y="176" width="70" height="60" fill="#6F4B22"/>
+        <rect x="132" y="176" width="70" height="60" fill="none" stroke="#A9762F" stroke-width="5"/>
+        <rect x="256" y="188" width="62" height="90" fill="#6F4B22"/>
+        <rect x="256" y="188" width="62" height="90" fill="none" stroke="#A9762F" stroke-width="5"/>
+        <!-- carrying poles -->
+        <rect x="10" y="286" width="440" height="15" rx="7" fill="#E4C27A"/>
+        <rect x="10" y="286" width="440" height="15" rx="7" fill="none" stroke="#B8933F" stroke-width="3"/>
+        <rect x="34" y="316" width="392" height="13" rx="6" fill="#E4C27A"/>
+        <rect x="34" y="316" width="392" height="13" rx="6" fill="none" stroke="#B8933F" stroke-width="3"/>
+        <!-- villagers: heads, bodies, legs -->
+        <g>
+          <g transform="translate(30 300)">
+            <circle cx="0" cy="6" r="19" fill="#C98A52"/><rect x="-17" y="26" width="34" height="52" rx="14" fill="#4C8FB8"/>
+            <rect x="-14" y="76" width="11" height="42" rx="5" fill="#3E6E8C"/><rect x="4" y="76" width="11" height="42" rx="5" fill="#3E6E8C"/>
+          </g>
+          <g transform="translate(118 306)">
+            <circle cx="0" cy="6" r="19" fill="#B87E48"/><rect x="-17" y="26" width="34" height="52" rx="14" fill="#E9553C"/>
+            <rect x="-14" y="76" width="11" height="42" rx="5" fill="#B93A26"/><rect x="4" y="76" width="11" height="42" rx="5" fill="#B93A26"/>
+          </g>
+          <g transform="translate(206 300)">
+            <circle cx="0" cy="6" r="19" fill="#D89A62"/><rect x="-17" y="26" width="34" height="52" rx="14" fill="#F6A623"/>
+            <rect x="-14" y="76" width="11" height="42" rx="5" fill="#C4770F"/><rect x="4" y="76" width="11" height="42" rx="5" fill="#C4770F"/>
+          </g>
+          <g transform="translate(294 306)">
+            <circle cx="0" cy="6" r="19" fill="#C98A52"/><rect x="-17" y="26" width="34" height="52" rx="14" fill="#57B01A"/>
+            <rect x="-14" y="76" width="11" height="42" rx="5" fill="#3F8410"/><rect x="4" y="76" width="11" height="42" rx="5" fill="#3F8410"/>
+          </g>
+          <g transform="translate(382 300)">
+            <circle cx="0" cy="6" r="19" fill="#B87E48"/><rect x="-17" y="26" width="34" height="52" rx="14" fill="#8E6BC4"/>
+            <rect x="-14" y="76" width="11" height="42" rx="5" fill="#6B4E9B"/><rect x="4" y="76" width="11" height="42" rx="5" fill="#6B4E9B"/>
+          </g>
+        </g>
+        <!-- raised arms holding the poles -->
+        <g stroke="#C98A52" stroke-width="11" stroke-linecap="round">
+          <path d="M30 316 L30 296"/><path d="M118 322 L118 302"/>
+          <path d="M206 316 L206 296"/><path d="M294 322 L294 302"/><path d="M382 316 L382 296"/>
+        </g>
+      </g>
+
+      <!-- ============ A BANGKA ON THE WATER ============ -->
+      <g transform="translate(700 754) scale(1.05)">
+        <path d="M-96 0 C -70 30, 70 30, 96 0 L 76 -18 L -76 -18 Z" fill="#C98A52"/>
+        <path d="M-96 0 C -70 30, 70 30, 96 0 L 96 -6 C 70 22, -70 22, -96 -6 Z" fill="#9C6335"/>
+        <rect x="-84" y="-24" width="168" height="9" rx="4" fill="#E4C27A"/>
+        <!-- outriggers -->
+        <path d="M-110 -34 L110 -34" stroke="#B8933F" stroke-width="7" stroke-linecap="round"/>
+        <path d="M-110 -34 C -120 -18, -120 4, -104 12" stroke="#B8933F" stroke-width="6" fill="none"/>
+        <path d="M110 -34 C 120 -18, 120 4, 104 12" stroke="#B8933F" stroke-width="6" fill="none"/>
+        <!-- rescuer -->
+        <g transform="translate(0 -36)">
+          <circle cx="0" cy="-24" r="15" fill="#C98A52"/>
+          <path d="M-18 -34 a18 12 0 0 1 36 0 z" fill="#F6A623"/>
+          <rect x="-14" y="-10" width="28" height="34" rx="11" fill="#F6A623"/>
+        </g>
+        <ellipse cx="0" cy="18" rx="120" ry="12" fill="#E4FAFF" opacity=".5"/>
+      </g>
+
+      <!-- rooftops just breaking the flood line, far right -->
+      <g opacity=".9">
+        <path d="M1560 950 L1650 892 L1740 950 Z" fill="#B0522F"/>
+        <path d="M1560 950 L1650 892 L1740 950 Z" fill="none" stroke="#7E3620" stroke-width="6"/>
+        <path d="M1748 972 L1820 928 L1892 972 Z" fill="#8E6BC4"/>
+        <path d="M1748 972 L1820 928 L1892 972 Z" fill="none" stroke="#5C4487" stroke-width="6"/>
+      </g>
+    </svg>
+
+    <div class="title-shimmer" aria-hidden="true"></div>
+    <canvas class="title-rain" id="titleRain" aria-hidden="true"></canvas>
+
+    <header class="title-head">
+      <h1 class="game-title">
+        Bayanihan
+        <span class="t2">Disaster Rescue</span>
+      </h1>
+      <p class="title-kicker">Tumaas na ang tubig. Kunin ang bangka. — The water is rising. Take the boat.</p>
+    </header>
+
+    <nav class="title-menu" aria-label="Main menu">
+      <button class="br-btn br-btn--wide" id="btnPlay"     type="button">Maglaro · Play</button>
+      <button class="br-btn br-btn--wide" id="btnSettings" type="button" data-floater="fl-settings">Settings</button>
+      <button class="br-btn br-btn--wide" id="btnExit"     type="button" data-floater="fl-exit">Exit</button>
     </nav>
 
-  </main>
-</div>
+    <div class="title-foot">
+      <div class="title-chips">
+        <button class="chip-btn" type="button" data-floater="fl-howto"><span class="ic" aria-hidden="true">🛟</span> Paano Maglaro · How to Play</button>
+        <button class="chip-btn" type="button" data-floater="fl-about"><span class="ic" aria-hidden="true">🏘️</span> Tungkol Dito · About</button>
+      </div>
+      <div class="title-credit">
+        <span class="sdg-badge"><b>11</b> Sustainable Cities &amp; Communities</span><br>
+        BSIT Capstone · University of Perpetual Help System Laguna
+      </div>
+    </div>
+
+  </div>
+</section>
+
 
 <!-- =====================================================================
-     FLOATER — MULTIPLAYER LOBBIES
+     SCREEN 2 — MISSION SELECT
      ===================================================================== -->
-<div class="floater-root" id="fl-multiplayer" role="dialog" aria-modal="true" aria-labelledby="fl-mp-title" aria-hidden="true">
-  <div class="floater__scrim"></div>
-  <div class="floater">
-    <header class="floater__head">
-      <span class="floater__icon" aria-hidden="true">👥</span>
+<section class="screen" id="screen-missions" aria-label="Mission select">
+  <div class="sheet">
+    <div class="sheet__bar">
+      <button class="br-btn br-btn--ghost br-btn--sm" type="button" data-goto="title">← Menu</button>
+      <div class="grow">
+        <h2 class="section-title">Piliin ang Misyon · Choose a Mission</h2>
+        <p class="section-sub">Three calls from the barangay, played in order. Each one hands you a boat and a very short window.</p>
+      </div>
+    </div>
+    <div class="mission-grid" id="missionGrid"></div>
+  </div>
+</section>
+
+
+<!-- =====================================================================
+     SCREEN 3 — PREPARATION PHASE (PAGHAHANDA)
+     ===================================================================== -->
+<section class="screen" id="screen-prep" aria-label="Preparation phase">
+  <div class="sheet">
+    <div class="sheet__bar">
+      <button class="br-btn br-btn--ghost br-btn--sm" type="button" data-goto="missions">← Missions</button>
+      <div class="grow">
+        <h2 class="section-title">Paghahanda · Pack the Boat</h2>
+        <p class="section-sub" id="prepSub">Every slot you fill is a slot you cannot fill with something else. Pack badly and the mission will show you why.</p>
+      </div>
+    </div>
+
+    <div class="prep-wrap">
       <div>
-        <div class="floater__title outlined" id="fl-mp-title">Multiplayer Lobbies</div>
-      </div>
-      <button class="floater__close" type="button" data-floater-close aria-label="Close">✕</button>
-    </header>
-
-    <div class="floater__body">
-      <div class="note note--warn">
-        <strong>This build runs local multiplayer</strong> — up to four players share one keyboard,
-        with AI filling any empty seats. The match loop and player state are kept separate from
-        input so a networked layer can be dropped in later without a rewrite.
+        <div class="supply-grid" id="supplyGrid"></div>
       </div>
 
-      <div class="field">
-        <div>
-          <div class="field__label">Local players</div>
-          <div class="field__hint">Humans sharing this keyboard</div>
-        </div>
-        <div class="field__control">
-          <div class="seg" id="segHumans" role="group" aria-label="Number of local players">
-            <button type="button" data-v="1">1</button>
-            <button type="button" data-v="2">2</button>
-            <button type="button" data-v="3">3</button>
-            <button type="button" data-v="4">4</button>
-          </div>
-        </div>
-      </div>
+      <aside class="boat-panel">
+        <h3>Ang Bangka · The Boat</h3>
+        <p class="sub">Supply slots are physical space on the deck.</p>
 
-      <div class="field">
-        <div>
-          <div class="field__label">AI opponents</div>
-          <div class="field__hint">Fills the remaining seats — four animals max</div>
-        </div>
-        <div class="field__control">
-          <div class="seg" id="segBots" role="group" aria-label="Number of AI opponents">
-            <button type="button" data-v="0">0</button>
-            <button type="button" data-v="1">1</button>
-            <button type="button" data-v="2">2</button>
-            <button type="button" data-v="3">3</button>
-          </div>
-        </div>
-      </div>
+        <div class="boat-art"><canvas id="boatCanvas" width="640" height="300"></canvas></div>
 
-      <h3>Seat assignments</h3>
-      <table class="ctrl-table" id="lobbyTable">
-        <thead><tr><th>Seat</th><th>Controls</th><th>Animal</th></tr></thead>
-        <tbody></tbody>
-      </table>
+        <div class="slot-row" id="slotRow"></div>
+        <p class="cap-line" id="capLine">0 / 4 slots packed</p>
+        <p class="cap-warn" id="capWarn">&nbsp;</p>
 
-      <p style="margin-top:.9em"><strong>Gamepads:</strong> plug one in and it takes over that seat automatically —
-      left stick to move, bottom face button to dash.</p>
+        <div class="prep-brief" id="prepBrief"></div>
+
+        <div class="prep-actions">
+          <button class="br-btn br-btn--sm br-btn--ghost" type="button" id="btnSuggest">Suggested Pack</button>
+          <button class="br-btn br-btn--sm br-btn--ghost" type="button" id="btnClearPack">Clear</button>
+          <button class="br-btn br-btn--green" type="button" id="btnLaunch">Ilunsad · Launch →</button>
+        </div>
+      </aside>
     </div>
-
-    <footer class="floater__foot">
-      <button class="tq-btn tq-btn--ghost" type="button" data-floater-close>Close</button>
-      <button class="tq-btn tq-btn--ghost" type="button" id="mpToCharacters">Change Animals</button>
-      <button class="tq-btn tq-btn--green" type="button" id="mpStart" data-autofocus>Start Match →</button>
-    </footer>
   </div>
-</div>
+</section>
+
 
 <!-- =====================================================================
-     FLOATER — SURVIVAL GUIDE  (how to play / controls / tide / SDG / species)
+     SCREEN 4 — GAMEPLAY
      ===================================================================== -->
-<div class="floater-root" id="fl-guide" role="dialog" aria-modal="true" aria-labelledby="fl-guide-title" aria-hidden="true">
-  <div class="floater__scrim"></div>
-  <div class="floater">
-    <header class="floater__head floater__head--green">
-      <span class="floater__icon" aria-hidden="true">📗</span>
-      <div class="floater__title outlined" id="fl-guide-title">Survival Guide</div>
-      <button class="floater__close" type="button" data-floater-close aria-label="Close">✕</button>
-    </header>
+<section class="screen" id="screen-game" aria-label="Rescue mission">
+  <div class="game-stage">
+    <canvas id="gameCanvas"></canvas>
 
-    <div class="floater__tabs" role="tablist">
-      <button class="tab" role="tab" data-tab="how" aria-selected="true" data-autofocus>How to Play</button>
-      <button class="tab" role="tab" data-tab="controls" aria-selected="false">Controls</button>
-      <button class="tab" role="tab" data-tab="tide" aria-selected="false">Tide-Shift</button>
-      <button class="tab" role="tab" data-tab="power" aria-selected="false">Power-ups</button>
-      <button class="tab" role="tab" data-tab="sdg" aria-selected="false">SDG 14 &amp; 15</button>
-      <button class="tab" role="tab" data-tab="species" aria-selected="false">Species</button>
+    <div class="hud" id="hud">
+      <div class="hud__tl">
+        <div class="hud-card">
+          <span class="hud-lbl">Sagip · Rescued</span>
+          <span class="hud-big" id="hudRescued">0</span>
+          <div class="obj-line" id="hudObj">&nbsp;</div>
+        </div>
+        <div class="hud-card">
+          <span class="hud-lbl">Sakay · Aboard <span id="hudSeatCount"></span></span>
+          <div class="seat-row" id="hudSeats"></div>
+        </div>
+        <div class="hud-card">
+          <span class="hud-lbl">Lakas · Stamina <kbd class="kbd">Shift</kbd></span>
+          <div class="stam" id="hudStam"><i class="stam__fill" id="hudStamFill"></i></div>
+        </div>
+      </div>
+
+      <div class="hud__tr">
+        <button class="br-btn br-btn--sm br-btn--ghost pause-btn" type="button" id="btnPause">Esc · Pause</button>
+        <div class="hud-card"><span class="hud-lbl">Puntos · Score</span><span class="hud-big" id="hudScore">0</span></div>
+        <div class="gauge-wrap" id="gaugeWrap">
+          <div class="hud-card" style="writing-mode:vertical-rl; text-orientation:mixed; padding:.7em .45em">
+            <span class="hud-lbl" style="margin:0">Tubig · Water</span>
+          </div>
+          <div class="gauge" id="gauge">
+            <div class="gauge__fill" id="gaugeFill"></div>
+            <div class="gauge__crit" id="gaugeCrit"><span>CRITICAL</span></div>
+            <div class="gauge__cap" id="gaugeCap">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hud__bc">
+        <div class="hotbar" id="hotbar"></div>
+      </div>
+
+      <div class="ctx-prompt" id="ctxPrompt"></div>
+      <div class="banner" id="banner"></div>
     </div>
 
-    <div class="floater__body">
-
-      <section data-panel="how">
-        <h3>The one-sentence version</h3>
-        <p>Shove every other animal off the island before the timer runs out — while the island itself
-        keeps turning from land into water underneath you.</p>
-
-        <h3>Winning a round</h3>
-        <ul>
-          <li>There is <strong>no health and no damage</strong>. The whole fight is positioning: barge rivals
-              into deep water, or strand them in a biome that drains them.</li>
-          <li>You are out if you <strong>fall into deep water</strong> (the dark blue), or if your
-              <strong>stamina ring empties</strong> while you are stuck in the wrong biome.</li>
-          <li>Last animal standing wins immediately. If the timer expires with several still alive, the win
-              goes to the <strong>highest score</strong> — survival time plus knockouts you caused.</li>
-          <li>In the closing seconds the <strong>sea level rises for good</strong> and the island erodes from
-              its edges inward, so a stalemate cannot last.</li>
-        </ul>
-
-        <h3>Shoving</h3>
-        <p>Every collision transfers a push scaled by your <strong>Push</strong> stat and how fast you were
-        moving. Hold a direction and slam into someone to nudge them; use <strong>Dash</strong> for a
-        committed hit that sends light animals flying. Dash has a short cooldown, and missing leaves you
-        skidding — so it is a real risk near an edge.</p>
-      </section>
-
-      <section data-panel="controls" hidden>
-        <h3>Keyboard — four players, one keyboard</h3>
-        <table class="ctrl-table">
-          <thead><tr><th>Player</th><th>Move</th><th>Dash</th></tr></thead>
-          <tbody>
-            <tr>
-              <td><span class="player-dot" style="background:#FF6B5B"></span>Player 1</td>
-              <td><span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span></td>
-              <td><span class="kbd">Space</span></td>
-            </tr>
-            <tr>
-              <td><span class="player-dot" style="background:#4CC8DA"></span>Player 2</td>
-              <td><span class="kbd">↑</span><span class="kbd">←</span><span class="kbd">↓</span><span class="kbd">→</span></td>
-              <td><span class="kbd">Enter</span></td>
-            </tr>
-            <tr>
-              <td><span class="player-dot" style="background:#95DA51"></span>Player 3</td>
-              <td><span class="kbd">I</span><span class="kbd">J</span><span class="kbd">K</span><span class="kbd">L</span></td>
-              <td><span class="kbd">U</span></td>
-            </tr>
-            <tr>
-              <td><span class="player-dot" style="background:#FFD886"></span>Player 4</td>
-              <td><span class="kbd">8</span><span class="kbd">4</span><span class="kbd">5</span><span class="kbd">6</span> <em>(numpad)</em></td>
-              <td><span class="kbd">0</span> <em>(numpad)</em></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>Gamepad</h3>
-        <p>Connect a controller and press a button — it claims the lowest free seat. Left stick moves,
-        the bottom face button dashes.</p>
-
-        <h3>During a match</h3>
-        <p><span class="kbd">P</span> or <span class="kbd">Esc</span> pauses ·
-           <span class="kbd">R</span> restarts the round ·
-           <span class="kbd">M</span> mutes audio</p>
-      </section>
-
-      <section data-panel="tide" hidden>
-        <h3>What Tide-Shift actually does</h3>
-        <p>The arena is not a flat platform with random puddles. Every tile has a fixed
-        <strong>elevation</strong>, and the match has a single <strong>sea level</strong> that rises and falls
-        in a slow cycle. Land is simply everything currently above that line.</p>
-        <p>Because the whole coastline moves at once, high ridges stay dry the longest and low
-        flats flood first — so the map has real geography you can learn and play around, rather than
-        tiles flipping at random.</p>
-
-        <div class="note note--sdg14">
-          <strong>Watch the banner.</strong> Two seconds before the water turns, the arena announces
-          <em>TIDE RISING</em> or <em>TIDE RECEDING</em> and the weather changes to match. That telegraph
-          is your window to reach the right ground.
-        </div>
-
-        <h3>Biome advantage</h3>
-        <ul>
-          <li><strong>Land animals</strong> move at full speed on land and lose stamina in water.</li>
-          <li><strong>Water animals</strong> are fastest in water and lose stamina on dry land.</li>
-          <li><strong>Amphibious animals</strong> never drain, but never get the speed bonus either.</li>
-        </ul>
-        <p>Your stamina ring sits under your feet. Empty it and you are eliminated — so being caught in the
-        wrong biome is just as lethal as being pushed off the edge, and a shove that strands someone
-        counts as a kill in slow motion.</p>
-
-        <h3>Rising seas</h3>
-        <p>For the last 30 seconds the <em>floor</em> of the tide climbs permanently. Ground that used to
-        resurface never does. The island shrinks from the outside in until there is barely a ridge left.</p>
-      </section>
-
-      <section data-panel="power" hidden>
-        <h3>Four pickups</h3>
-        <p>They spawn on the island every few seconds and expire if nobody grabs them. Walk over one to
-        use it instantly.</p>
-        <ul id="guidePowerList"></ul>
-        <p>Only one of each effect can run on you at a time, and picking up a second copy refreshes the
-        timer rather than stacking it.</p>
-      </section>
-
-      <section data-panel="sdg" hidden>
-        <h3>Why this game exists</h3>
-        <p>Most survival games are entertainment only. The concepts in
-        <strong>SDG 14 (Life Below Water)</strong> and <strong>SDG 15 (Life on Land)</strong> are usually
-        taught with static, text-heavy material that struggles to hold a younger audience. Terraqua Clash
-        puts the idea in the mechanic instead of in a paragraph.</p>
-
-        <div class="note note--sdg14">
-          <strong>SDG 14 — Life Below Water.</strong> Rising and encroaching water is not scenery here; it is
-          the thing that kills you. Marine species thrive exactly where terrestrial ones start drowning,
-          which is the point: the two systems are not separate.
-        </div>
-        <div class="note note--sdg15">
-          <strong>SDG 15 — Life On Land.</strong> Every habitat in Terrain Select is a real ecosystem under
-          real pressure, and the endgame — ground that floods and never comes back — is habitat loss
-          rendered as a game rule.
-        </div>
-
-        <h3>What a player should walk away with</h3>
-        <ul>
-          <li>Marine and terrestrial ecosystems are <strong>interdependent</strong>, not parallel.</li>
-          <li>Specialists lose ground when a habitat changes faster than they can adapt — the
-              generalist on the roster is the one who copes.</li>
-          <li>Habitat loss is rarely a single event. It is a slow ratchet, which is why the tide floor
-              only ever climbs.</li>
-        </ul>
-
-        <p style="opacity:.8"><em>Capstone context: BSIT, University of Perpetual Help System Laguna.
-        Pilot group — UPHSL student groups.</em></p>
-      </section>
-
-      <section data-panel="species" hidden>
-        <h3>Roster field notes</h3>
-        <p>Each animal carries a real conservation note, shown again on the results screen after a match.</p>
-        <div id="guideSpeciesList"></div>
-      </section>
-
+    <div class="touch" id="touchUI">
+      <div class="stick" id="tStick"><div class="stick__nub" id="tNub"></div></div>
+      <div class="tbtns">
+        <button class="tbtn tbtn--sm" id="tSprint" type="button">Sprint</button>
+        <button class="tbtn" id="tAction" type="button">Sagip</button>
+      </div>
     </div>
-
-    <footer class="floater__foot">
-      <button class="tq-btn tq-btn--ghost" type="button" data-floater-close>Close</button>
-      <button class="tq-btn tq-btn--green" type="button" id="guidePlay">Play Now →</button>
-    </footer>
   </div>
-</div>
+</section>
+
+
+<!-- =====================================================================
+     SCREEN 5 — AFTER-ACTION REPORT
+     ===================================================================== -->
+<section class="screen" id="screen-report" aria-label="After-action report">
+  <div class="sheet">
+    <div class="report-wrap">
+      <div class="report-head">
+        <h2 class="section-title">Ulat Pagkatapos · After-Action Report</h2>
+        <div class="stars" id="repStars"></div>
+        <div class="verdict" id="repVerdict"></div>
+      </div>
+
+      <div class="report-cols">
+        <div class="rpanel">
+          <h3>Mga Tao · People</h3>
+          <div id="repPeople"></div>
+        </div>
+        <div class="rpanel">
+          <h3>Triage Breakdown</h3>
+          <div id="repTriage"></div>
+        </div>
+        <div class="rpanel">
+          <h3>Gamit · Supplies</h3>
+          <div id="repSupplies"></div>
+        </div>
+      </div>
+
+      <div class="lesson-list" id="repLessons"></div>
+
+      <div class="report-actions">
+        <button class="br-btn br-btn--ghost" type="button" id="repMenu">Menu</button>
+        <button class="br-btn" type="button" id="repRetry">Ulitin · Retry</button>
+        <button class="br-btn br-btn--green" type="button" id="repNext">Susunod · Next Mission →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- =====================================================================
+     SCREEN 6 — FAREWELL (EXIT destination — never window.close())
+     ===================================================================== -->
+<section class="screen" id="screen-farewell" aria-label="Farewell">
+  <div class="farewell">
+    <div class="fw-card">
+      <div style="font-size:44px" aria-hidden="true">🏘️</div>
+      <h2>Salamat sa pagsagip.<span>Thank you for the rescue.</span></h2>
+      <p>The bangka is tied up and the evacuation center is full of people who made it.
+         The real lesson does not live in the score — it lives in what you packed before you left.</p>
+
+      <div class="fw-sdg">
+        <div class="n">11</div>
+        <div>
+          <b>Sustainable Cities and Communities</b>
+          A resilient barangay is not one that never floods. It is one where every household
+          already knows what is in the go-bag, where the evacuation route is, and who on the
+          street needs help getting out first.
+        </div>
+      </div>
+
+      <div class="fw-credits">
+        <h3>Credits</h3>
+        <dl>
+          <dt>Concept</dt><dd>Bayanihan: Disaster Rescue — a 2D top-down disaster-response prototype</dd>
+          <dt>Course</dt><dd>BSIT Capstone Project</dd>
+          <dt>Institution</dt><dd>University of Perpetual Help System Laguna</dd>
+          <dt>SDG Target</dt><dd>SDG 11 — Sustainable Cities and Communities (disaster resilience &amp; preparedness)</dd>
+          <dt>Build</dt><dd>Vertical slice · HTML5 Canvas2D + vanilla JS · no build step</dd>
+          <dt>Art</dt><dd>Scene, sprites and UI drawn procedurally in the reference palette</dd>
+        </dl>
+      </div>
+
+      <p style="font-size:13px; opacity:.72">
+        A web page cannot close a tab it did not open, so this card is the exit —
+        nothing here calls <code>window.close()</code>.
+      </p>
+
+      <button class="br-btn" type="button" id="fwReturn">Bumalik · Return to Title</button>
+    </div>
+  </div>
+</section>
+
+</div><!-- /#app -->
+
 
 <!-- =====================================================================
      FLOATER — SETTINGS
      ===================================================================== -->
-<div class="floater-root" id="fl-settings" role="dialog" aria-modal="true" aria-labelledby="fl-set-title" aria-hidden="true">
-  <div class="floater__scrim"></div>
+<div class="floater-root" id="fl-settings" role="dialog" aria-modal="true" aria-labelledby="flSetTitle" aria-hidden="true">
+  <div class="floater__scrim" data-floater-close></div>
   <div class="floater floater--sm">
     <header class="floater__head">
       <span class="floater__icon" aria-hidden="true">⚙️</span>
-      <div class="floater__title outlined" id="fl-set-title">Settings</div>
-      <button class="floater__close" type="button" data-floater-close aria-label="Close">✕</button>
+      <div class="floater__title" id="flSetTitle">Settings<small>Audio, motion and a control reminder</small></div>
+      <button class="floater__close" type="button" data-floater-close aria-label="Close settings">✕</button>
     </header>
-
     <div class="floater__body">
       <div class="field">
-        <div>
-          <div class="field__label">Volume</div>
-          <div class="field__hint">All sound is synthesised — no audio files ship with the build</div>
-        </div>
+        <div><div class="field__label">Master volume</div>
+             <div class="field__hint">All audio is synthesised with the Web Audio API</div></div>
         <div class="field__control">
-          <input type="range" id="setVolume" min="0" max="100" step="5" aria-label="Volume" data-autofocus>
-          <span class="field__value" id="setVolumeVal">60%</span>
+          <input type="range" id="setMaster" min="0" max="100" step="5" value="80" aria-label="Master volume" data-autofocus>
+          <span class="field__value" id="setMasterVal">80%</span>
         </div>
       </div>
-
       <div class="field">
-        <div><div class="field__label">Mute</div></div>
+        <div><div class="field__label">Sound effects</div>
+             <div class="field__hint">Splashes, rescues, thunder, radio pings</div></div>
         <div class="field__control">
-          <div class="seg" id="setMuted" role="group" aria-label="Mute">
-            <button type="button" data-v="0">On</button>
-            <button type="button" data-v="1">Muted</button>
+          <input type="range" id="setSfx" min="0" max="100" step="5" value="90" aria-label="Sound effects volume">
+          <span class="field__value" id="setSfxVal">90%</span>
+        </div>
+      </div>
+      <div class="field">
+        <div><div class="field__label">Music &amp; ambience</div>
+             <div class="field__hint">Rain bed and the rising-water drone</div></div>
+        <div class="field__control">
+          <input type="range" id="setMusic" min="0" max="100" step="5" value="50" aria-label="Music volume">
+          <span class="field__value" id="setMusicVal">50%</span>
+        </div>
+      </div>
+      <div class="field">
+        <div><div class="field__label">Reduce motion</div>
+             <div class="field__hint">Dampens screen shake, rain particles and lightning</div></div>
+        <div class="field__control">
+          <div class="seg" id="setMotion" role="group" aria-label="Reduce motion">
+            <button type="button" data-v="0" aria-pressed="true">Off</button>
+            <button type="button" data-v="1" aria-pressed="false">On</button>
           </div>
         </div>
       </div>
 
-      <div class="field">
-        <div>
-          <div class="field__label">Round length</div>
-          <div class="field__hint">Seas start rising for good in the final 30s</div>
-        </div>
-        <div class="field__control">
-          <div class="seg" id="setRound" role="group" aria-label="Round length">
-            <button type="button" data-v="60">60s</button>
-            <button type="button" data-v="90">90s</button>
-            <button type="button" data-v="120">120s</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <div>
-          <div class="field__label">Tide speed</div>
-          <div class="field__hint">Multiplier on each habitat's own tide cycle</div>
-        </div>
-        <div class="field__control">
-          <div class="seg" id="setTide" role="group" aria-label="Tide speed">
-            <button type="button" data-v="0.7">Calm</button>
-            <button type="button" data-v="1">Normal</button>
-            <button type="button" data-v="1.5">Wild</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <div><div class="field__label">Weather particles</div>
-          <div class="field__hint">Turn off on slower machines</div></div>
-        <div class="field__control">
-          <div class="seg" id="setParticles" role="group" aria-label="Weather particles">
-            <button type="button" data-v="1">On</button><button type="button" data-v="0">Off</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <div><div class="field__label">Screen shake</div></div>
-        <div class="field__control">
-          <div class="seg" id="setShake" role="group" aria-label="Screen shake">
-            <button type="button" data-v="1">On</button><button type="button" data-v="0">Off</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <div><div class="field__label">Player name tags</div></div>
-        <div class="field__control">
-          <div class="seg" id="setNames" role="group" aria-label="Player name tags">
-            <button type="button" data-v="1">On</button><button type="button" data-v="0">Off</button>
-          </div>
-        </div>
-      </div>
+      <h3>Controls</h3>
+      <table class="tbl">
+        <tbody>
+          <tr><td>Move the bangka</td><td><span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span> or <span class="kbd">↑</span><span class="kbd">←</span><span class="kbd">↓</span><span class="kbd">→</span></td></tr>
+          <tr><td>Sprint</td><td><span class="kbd">Shift</span></td></tr>
+          <tr><td>Rescue / drop off</td><td><span class="kbd">Space</span> or <span class="kbd">E</span></td></tr>
+          <tr><td>Use packed supply</td><td><span class="kbd">1</span><span class="kbd">2</span><span class="kbd">3</span><span class="kbd">4</span><span class="kbd">5</span></td></tr>
+          <tr><td>Pause</td><td><span class="kbd">Esc</span></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:.9em; opacity:.75">On a touch device a virtual stick and action buttons appear automatically.</p>
     </div>
-
     <footer class="floater__foot">
-      <button class="tq-btn tq-btn--ghost tq-btn--sm" type="button" id="setReset">Reset to defaults</button>
-      <button class="tq-btn" type="button" data-floater-close>Done</button>
+      <button class="br-btn br-btn--sm br-btn--ghost" type="button" id="setReset">Reset defaults</button>
+      <button class="br-btn br-btn--sm" type="button" data-floater-close>Done</button>
     </footer>
   </div>
 </div>
 
+
 <!-- =====================================================================
-     FLOATER — QUIT
+     FLOATER — HOW TO PLAY
      ===================================================================== -->
-<div class="floater-root" id="fl-quit" role="dialog" aria-modal="true" aria-labelledby="fl-quit-title" aria-hidden="true">
-  <div class="floater__scrim"></div>
+<div class="floater-root" id="fl-howto" role="dialog" aria-modal="true" aria-labelledby="flHowTitle" aria-hidden="true">
+  <div class="floater__scrim" data-floater-close></div>
+  <div class="floater">
+    <header class="floater__head floater__head--green">
+      <span class="floater__icon" aria-hidden="true">🛟</span>
+      <div class="floater__title" id="flHowTitle">Paano Maglaro<small>How to Play</small></div>
+      <button class="floater__close" type="button" data-floater-close aria-label="Close how to play">✕</button>
+    </header>
+    <div class="floater__tabs" role="tablist" id="howTabs">
+      <button class="tab" role="tab" data-tab="move" aria-selected="true" data-autofocus>Piloting</button>
+      <button class="tab" role="tab" data-tab="rescue" aria-selected="false">Rescuing</button>
+      <button class="tab" role="tab" data-tab="supplies" aria-selected="false">Supplies</button>
+      <button class="tab" role="tab" data-tab="water" aria-selected="false">Rising Water</button>
+    </div>
+    <div class="floater__body">
+      <section data-panel="move">
+        <h3>The bangka is a boat, not a car</h3>
+        <p><span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span>
+           or the arrow keys steer. The hull carries momentum and water drag, so it swings wide into a turn and
+           glides for a moment after you let go. Lead your turns.</p>
+        <p><span class="kbd">Shift</span> sprints and drains the <strong>stamina</strong> bar. It refills on its own,
+           slowly — or instantly from a packed <strong>Tubig</strong>.</p>
+        <h3>Current</h3>
+        <p>Some flooded streets run fast. You will see the streaks in the water before you feel the push —
+           those lanes shove the boat sideways, and fighting one costs stamina you may want later.</p>
+        <h3>Debris</h3>
+        <p>Hit floating debris at speed and the boat staggers. If people are aboard, one can go over the side.
+           You can pick them back up, but the clock does not stop while you do.</p>
+      </section>
+
+      <section data-panel="rescue" hidden>
+        <h3>The loop</h3>
+        <p>Pull alongside a resident and press <span class="kbd">Space</span> or <span class="kbd">E</span>.
+           Not everyone can be taken the same way:</p>
+        <table class="tbl">
+          <thead><tr><th>Situation</th><th>What you need</th></tr></thead>
+          <tbody>
+            <tr><td>On a roof or in a tree</td><td>Nothing — just get there</td></tr>
+            <tr><td>In open water</td><td><strong>Salbabida</strong> (lifebuoy)</td></tr>
+            <tr><td>Trapped behind debris</td><td><strong>Lubid</strong> (rope)</td></tr>
+            <tr><td>Injured 🩹</td><td><strong>Botika</strong> (first-aid) — a 2-second hold to stabilise first</td></tr>
+          </tbody>
+        </table>
+        <h3>Triage</h3>
+        <p>An icon floats above every resident: 👵 elderly · 🧒 child · 🩹 injured · 🧍 able-bodied.
+           The first three score higher <em>and</em> run out of time faster. A ring around them drains as
+           their situation worsens — when it empties, someone on a roof slips into the water, and someone
+           already in the water is gone.</p>
+        <div class="note note--warn"><strong>The boat holds three people.</strong> When it is full you must
+        run them to the evacuation center before you can take anyone else. That ferry rhythm is the whole game —
+        who you take first genuinely matters.</div>
+        <h3>Drop-off</h3>
+        <p>Steer into the marked water in front of the evacuation center and everyone aboard is unloaded
+           automatically. Hold <span class="kbd">E</span> there for 1.5s to <strong>call it in</strong> and end the
+           mission early — worth it if the water is about to take the rest.</p>
+      </section>
+
+      <section data-panel="supplies" hidden>
+        <h3>Packed before you leave, not during</h3>
+        <p>The Preparation Phase gives you four slots (five on the later missions) and eight things worth taking.
+           You cannot restock mid-mission. That is the point.</p>
+        <p>Whatever you packed appears in the hotbar at the bottom of the screen, numbered
+           <span class="kbd">1</span> to <span class="kbd">5</span>. Some are passive and simply work;
+           the rest you trigger:</p>
+        <ul>
+          <li><strong>Flashlight</strong> — toggles the beam. Widens and lengthens the visibility cone enormously at dusk and at night.</li>
+          <li><strong>Tubig</strong> — three swigs, each refilling stamina instantly.</li>
+          <li><strong>Radyo</strong> — pings the direction of the nearest resident you have not found, then cools down for 20 seconds.</li>
+        </ul>
+        <div class="note"><strong>Nothing is a hard fail.</strong> Missing the radio makes Mission 2 much harder,
+        not impossible — listen for the calls for help instead. They get louder as you close in.</div>
+      </section>
+
+      <section data-panel="water" hidden>
+        <h3>The clock is the flood</h3>
+        <p>There is no countdown timer. Instead the waterline climbs, tracked by the vertical gauge on the right.
+           As it rises it swallows the low roofs one by one — and anyone still standing on a roof when it goes
+           under is lost.</p>
+        <p>Past the dashed <strong>CRITICAL</strong> mark the rain thickens, the sky drops and the audio turns.
+           The mission ends when the gauge tops out, when everyone has been rescued or lost, or when you
+           call it in from the evacuation center.</p>
+        <p>A mission played reasonably runs <strong>two to four minutes</strong>. Move.</p>
+      </section>
+    </div>
+    <footer class="floater__foot">
+      <button class="br-btn br-btn--sm br-btn--ghost" type="button" data-floater-close>Close</button>
+      <button class="br-btn br-btn--sm br-btn--green" type="button" id="howPlay">Play →</button>
+    </footer>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     FLOATER — ABOUT
+     ===================================================================== -->
+<div class="floater-root" id="fl-about" role="dialog" aria-modal="true" aria-labelledby="flAboutTitle" aria-hidden="true">
+  <div class="floater__scrim" data-floater-close></div>
+  <div class="floater">
+    <header class="floater__head floater__head--blue">
+      <span class="floater__icon" aria-hidden="true">🏘️</span>
+      <div class="floater__title" id="flAboutTitle">Tungkol Dito<small>About this project</small></div>
+      <button class="floater__close" type="button" data-floater-close aria-label="Close about">✕</button>
+    </header>
+    <div class="floater__body">
+      <h3>Bayanihan</h3>
+      <p>The word names a Filipino tradition: the neighbours gather, slide bamboo poles under a
+         <em>bahay kubo</em>, and physically carry the house to its new place. Nobody is paid.
+         Nobody could do it alone. It is the picture on the title screen, and it is the argument
+         the game is making — <strong>rescue is a community act, and preparation is what makes it possible.</strong></p>
+
+      <div class="note"><strong>SDG 11 — Sustainable Cities and Communities.</strong> Target 11.5 is about
+      substantially reducing the deaths and the number of people affected by disasters, with a direct focus on
+      the poor and on people in vulnerable situations. The Philippines takes roughly twenty tropical cyclones a
+      year. This game is one small piece of the preparedness half of that target.</p>
+
+      <h3>Why a game</h3>
+      <p>Philippine disaster-preparedness education is delivered almost entirely through text-heavy modules,
+         seminars and drills that students disengage from. The content here is the same content — go-bag
+         contents, triage priority, evacuation procedure, the cost of being unprepared — but it arrives as
+         consequence instead of as a slide. A missing flashlight is a missing person you do not find in time.</p>
+
+      <h3>The go-bag this is modelled on</h3>
+      <p>The Preparation Phase is a compressed version of the household emergency kit recommended by Philippine
+         disaster-risk agencies. The real checklist is longer than four slots, which is exactly why choosing
+         hurts:</p>
+      <ul>
+        <li>Drinking water — about 3 litres per person per day, for three days</li>
+        <li>Non-perishable food and a manual can opener</li>
+        <li>First-aid kit plus any maintenance medicines</li>
+        <li>Flashlight and spare batteries — <em>not</em> your phone torch, which you will need for its battery</li>
+        <li>Battery or hand-crank radio, for bulletins when the towers are down</li>
+        <li>Whistle, rope, and a lifebuoy or flotation aid if you live near water</li>
+        <li>Raincoat, dry clothes, blanket</li>
+        <li>Photocopies of IDs and documents in a sealed plastic bag</li>
+        <li>Cash in small denominations</li>
+      </ul>
+
+      <div class="note note--good"><strong>Take one thing away from this:</strong> the bag is packed on a
+      quiet Tuesday, not when the water is at the door. Every choice this game makes you regret is a choice
+      that is free to make correctly right now.</div>
+
+      <h3>Build notes</h3>
+      <p>Vertical slice — three missions, roughly ten to fifteen minutes end to end.
+         Plain HTML5, CSS3 and vanilla JavaScript with a Canvas2D arena; no engine, no build step, no server,
+         no <code>localStorage</code>. Settings and progress live in memory for the session.</p>
+      <p style="opacity:.75; font-size:.9em"><em>Art note: the reference art delivered in
+         <code>BAYANIHAN_ELEMENTS/</code> belongs to a different project (Terraqua Clash), so every scene,
+         sprite and icon here is drawn procedurally — the palette and layout are taken from that reference,
+         the content is not.</em></p>
+    </div>
+    <footer class="floater__foot">
+      <button class="br-btn br-btn--sm" type="button" data-floater-close>Close</button>
+    </footer>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     FLOATER — EXIT CONFIRMATION
+     ===================================================================== -->
+<div class="floater-root" id="fl-exit" role="dialog" aria-modal="true" aria-labelledby="flExitTitle" aria-hidden="true">
+  <div class="floater__scrim" data-floater-close></div>
   <div class="floater floater--sm">
     <header class="floater__head floater__head--red">
       <span class="floater__icon" aria-hidden="true">🚪</span>
-      <div class="floater__title outlined" id="fl-quit-title">Leave the island?</div>
+      <div class="floater__title" id="flExitTitle">Umuwi na?<small>Leave the barangay?</small></div>
       <button class="floater__close" type="button" data-floater-close aria-label="Close">✕</button>
     </header>
     <div class="floater__body">
-      <p>Thanks for playing the Terraqua Clash prototype.</p>
-      <div class="note note--sdg14">
-        <strong>Before you go:</strong> the Arctic sea ice that Nanuq hunts from is retreating by
-        roughly 13% per decade — and six of the seven sea turtle species Tala belongs to are threatened.
+      <p>There are still people on the roofs.</p>
+      <div class="note note--warn">
+        <strong>Before you go —</strong> the Philippines is hit by roughly twenty tropical cyclones a year,
+        and the households that come through them best are the ones that packed the bag before the warning,
+        not after it.
       </div>
-      <p id="quitNote" style="opacity:.75; font-size:.85rem"></p>
     </div>
     <footer class="floater__foot">
-      <button class="tq-btn tq-btn--ghost" type="button" data-floater-close data-autofocus>Keep Playing</button>
-      <button class="tq-btn tq-btn--red" type="button" id="quitConfirm">Quit</button>
+      <button class="br-btn br-btn--sm" type="button" data-floater-close data-autofocus>Manatili · Stay</button>
+      <button class="br-btn br-btn--sm br-btn--red" type="button" id="exitConfirm">Umalis · Leave</button>
     </footer>
   </div>
 </div>
 
-<script src="js/core.js"></script>
-<script src="js/animals.js"></script>
-<script src="js/terrains.js"></script>
-<script src="js/powerups.js"></script>
+
+<!-- =====================================================================
+     FLOATER — PAUSE
+     ===================================================================== -->
+<div class="floater-root" id="fl-pause" role="dialog" aria-modal="true" aria-labelledby="flPauseTitle" aria-hidden="true">
+  <div class="floater__scrim" data-floater-close></div>
+  <div class="floater floater--sm">
+    <header class="floater__head">
+      <span class="floater__icon" aria-hidden="true">⏸️</span>
+      <div class="floater__title" id="flPauseTitle">Paused<small>The water is waiting</small></div>
+      <button class="floater__close" type="button" data-floater-close aria-label="Resume">✕</button>
+    </header>
+    <div class="floater__body">
+      <div id="pauseLoadout"></div>
+      <h3>Controls</h3>
+      <p><span class="kbd">WASD</span> / arrows move · <span class="kbd">Shift</span> sprint ·
+         <span class="kbd">Space</span> or <span class="kbd">E</span> rescue &amp; drop off ·
+         <span class="kbd">1</span>–<span class="kbd">5</span> supplies</p>
+    </div>
+    <footer class="floater__foot">
+      <button class="br-btn br-btn--sm br-btn--ghost" type="button" id="pauseAbort">Abandon Mission</button>
+      <button class="br-btn br-btn--sm br-btn--ghost" type="button" id="pauseRestart">Restart</button>
+      <button class="br-btn br-btn--sm br-btn--green" type="button" data-floater-close data-autofocus>Resume</button>
+    </footer>
+  </div>
+</div>
+
+<div id="toast" aria-live="polite"></div>
+
+<script src="js/state.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/assets.js"></script>
+<script src="js/supplies.js"></script>
+<script src="js/missions.js"></script>
+<script src="js/maps.js"></script>
+<script src="js/rescue.js"></script>
+<script src="js/hud.js"></script>
+<script src="js/render.js"></script>
+<script src="js/game.js"></script>
+<script src="js/report.js"></script>
+<script src="js/preparation.js"></script>
+<script src="js/mission-select.js"></script>
 <script src="js/landing.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
