@@ -56,9 +56,11 @@
       b.title = def.fil + ' / ' + def.eng + ' — ' + def.fx;
       b.setAttribute('aria-label', def.fil + ' ' + def.eng);
       b.appendChild(BR.art.supplyCanvas(id, 34));
+      // Just the hotkey number: the icon already identifies the supply, and a
+      // full Filipino name is far wider than the button.
       var k = document.createElement('span');
       k.className = 'hot__key';
-      k.textContent = (i + 1) + ' · ' + def.fil.toUpperCase();
+      k.textContent = String(i + 1);
       b.appendChild(k);
       var badge = document.createElement('span');
       badge.className = 'hot__badge';

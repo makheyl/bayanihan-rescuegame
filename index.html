@@ -88,8 +88,9 @@
       <path fill="#5FD6E6" opacity=".55" d="M0 792 C 340 758, 700 826, 1040 796 C 1340 770, 1640 826, 1920 788 L1920 812 C 1640 850, 1340 794, 1040 820 C 700 850, 340 782, 0 816 Z"/>
 
       <!-- floodwater lapping over the sand: the barangay is going under -->
-      <path fill="#3E92A8" opacity=".42" d="M0 928 C 360 898, 700 962, 1060 934 C 1380 910, 1660 964, 1920 930 L1920 1080 L0 1080 Z"/>
-      <path fill="#2A6E80" opacity=".3"  d="M0 998 C 400 970, 760 1026, 1120 1000 C 1440 978, 1680 1024, 1920 998 L1920 1080 L0 1080 Z"/>
+      <path fill="#E4FAFF" opacity=".7"  d="M0 912 C 360 882, 700 946, 1060 918 C 1380 894, 1660 948, 1920 914 L1920 936 C 1660 970, 1380 916, 1060 940 C 700 968, 360 904, 0 934 Z"/>
+      <path fill="#3E92A8" opacity=".62" d="M0 922 C 360 892, 700 956, 1060 928 C 1380 904, 1660 958, 1920 924 L1920 1080 L0 1080 Z"/>
+      <path fill="#2A6E80" opacity=".46" d="M0 998 C 400 970, 760 1026, 1120 1000 C 1440 978, 1680 1024, 1920 998 L1920 1080 L0 1080 Z"/>
 
       <!-- ============ PALMS + FOLIAGE, UPPER LEFT ============ -->
       <g>
@@ -129,7 +130,7 @@
       </g>
 
       <!-- ============ BAHAY KUBO CARRIED BY VILLAGERS, UPPER RIGHT ============ -->
-      <g transform="translate(1236 300) scale(1.12)">
+      <g transform="translate(1232 498) scale(0.86)">
         <!-- roof -->
         <path d="M40 150 L230 40 L420 150 Z" fill="#D9A45B"/>
         <path d="M40 150 L230 40 L420 150 Z" fill="none" stroke="#A9762F" stroke-width="7" stroke-linejoin="round"/>
@@ -153,38 +154,55 @@
         <rect x="10" y="286" width="440" height="15" rx="7" fill="none" stroke="#B8933F" stroke-width="3"/>
         <rect x="34" y="316" width="392" height="13" rx="6" fill="#E4C27A"/>
         <rect x="34" y="316" width="392" height="13" rx="6" fill="none" stroke="#B8933F" stroke-width="3"/>
-        <!-- villagers: heads, bodies, legs -->
+        <!-- villagers, arms raised to the poles. Arms are drawn first and set
+             wide of the head so the group reads as carrying the house rather
+             than standing behind a railing. -->
         <g>
-          <g transform="translate(30 300)">
-            <circle cx="0" cy="6" r="19" fill="#C98A52"/><rect x="-17" y="26" width="34" height="52" rx="14" fill="#4C8FB8"/>
+          <g transform="translate(30 318)">
+            <g stroke="#C98A52" stroke-width="9" stroke-linecap="round">
+              <path d="M-16 30 L-21 -14"/><path d="M16 30 L21 -14"/>
+            </g>
             <rect x="-14" y="76" width="11" height="42" rx="5" fill="#3E6E8C"/><rect x="4" y="76" width="11" height="42" rx="5" fill="#3E6E8C"/>
+            <rect x="-17" y="26" width="34" height="52" rx="14" fill="#4C8FB8"/>
+            <circle cx="0" cy="6" r="19" fill="#C98A52"/>
           </g>
-          <g transform="translate(118 306)">
-            <circle cx="0" cy="6" r="19" fill="#B87E48"/><rect x="-17" y="26" width="34" height="52" rx="14" fill="#E9553C"/>
+          <g transform="translate(118 318)">
+            <g stroke="#B87E48" stroke-width="9" stroke-linecap="round">
+              <path d="M-16 30 L-21 -14"/><path d="M16 30 L21 -14"/>
+            </g>
             <rect x="-14" y="76" width="11" height="42" rx="5" fill="#B93A26"/><rect x="4" y="76" width="11" height="42" rx="5" fill="#B93A26"/>
+            <rect x="-17" y="26" width="34" height="52" rx="14" fill="#E9553C"/>
+            <circle cx="0" cy="6" r="19" fill="#B87E48"/>
           </g>
-          <g transform="translate(206 300)">
-            <circle cx="0" cy="6" r="19" fill="#D89A62"/><rect x="-17" y="26" width="34" height="52" rx="14" fill="#F6A623"/>
+          <g transform="translate(206 318)">
+            <g stroke="#D89A62" stroke-width="9" stroke-linecap="round">
+              <path d="M-16 30 L-21 -14"/><path d="M16 30 L21 -14"/>
+            </g>
             <rect x="-14" y="76" width="11" height="42" rx="5" fill="#C4770F"/><rect x="4" y="76" width="11" height="42" rx="5" fill="#C4770F"/>
+            <rect x="-17" y="26" width="34" height="52" rx="14" fill="#F6A623"/>
+            <circle cx="0" cy="6" r="19" fill="#D89A62"/>
           </g>
-          <g transform="translate(294 306)">
-            <circle cx="0" cy="6" r="19" fill="#C98A52"/><rect x="-17" y="26" width="34" height="52" rx="14" fill="#57B01A"/>
+          <g transform="translate(294 318)">
+            <g stroke="#C98A52" stroke-width="9" stroke-linecap="round">
+              <path d="M-16 30 L-21 -14"/><path d="M16 30 L21 -14"/>
+            </g>
             <rect x="-14" y="76" width="11" height="42" rx="5" fill="#3F8410"/><rect x="4" y="76" width="11" height="42" rx="5" fill="#3F8410"/>
+            <rect x="-17" y="26" width="34" height="52" rx="14" fill="#57B01A"/>
+            <circle cx="0" cy="6" r="19" fill="#C98A52"/>
           </g>
-          <g transform="translate(382 300)">
-            <circle cx="0" cy="6" r="19" fill="#B87E48"/><rect x="-17" y="26" width="34" height="52" rx="14" fill="#8E6BC4"/>
+          <g transform="translate(382 318)">
+            <g stroke="#B87E48" stroke-width="9" stroke-linecap="round">
+              <path d="M-16 30 L-21 -14"/><path d="M16 30 L21 -14"/>
+            </g>
             <rect x="-14" y="76" width="11" height="42" rx="5" fill="#6B4E9B"/><rect x="4" y="76" width="11" height="42" rx="5" fill="#6B4E9B"/>
+            <rect x="-17" y="26" width="34" height="52" rx="14" fill="#8E6BC4"/>
+            <circle cx="0" cy="6" r="19" fill="#B87E48"/>
           </g>
-        </g>
-        <!-- raised arms holding the poles -->
-        <g stroke="#C98A52" stroke-width="11" stroke-linecap="round">
-          <path d="M30 316 L30 296"/><path d="M118 322 L118 302"/>
-          <path d="M206 316 L206 296"/><path d="M294 322 L294 302"/><path d="M382 316 L382 296"/>
         </g>
       </g>
 
       <!-- ============ A BANGKA ON THE WATER ============ -->
-      <g transform="translate(700 754) scale(1.05)">
+      <g transform="translate(624 948) scale(0.98)">
         <path d="M-96 0 C -70 30, 70 30, 96 0 L 76 -18 L -76 -18 Z" fill="#C98A52"/>
         <path d="M-96 0 C -70 30, 70 30, 96 0 L 96 -6 C 70 22, -70 22, -96 -6 Z" fill="#9C6335"/>
         <rect x="-84" y="-24" width="168" height="9" rx="4" fill="#E4C27A"/>
@@ -201,12 +219,14 @@
         <ellipse cx="0" cy="18" rx="120" ry="12" fill="#E4FAFF" opacity=".5"/>
       </g>
 
-      <!-- rooftops just breaking the flood line, far right -->
-      <g opacity=".9">
-        <path d="M1560 950 L1650 892 L1740 950 Z" fill="#B0522F"/>
-        <path d="M1560 950 L1650 892 L1740 950 Z" fill="none" stroke="#7E3620" stroke-width="6"/>
-        <path d="M1748 972 L1820 928 L1892 972 Z" fill="#8E6BC4"/>
-        <path d="M1748 972 L1820 928 L1892 972 Z" fill="none" stroke="#5C4487" stroke-width="6"/>
+      <!-- neighbours' rooftops just breaking the flood line -->
+      <g opacity=".92">
+        <path d="M772 986 L862 928 L952 986 Z" fill="#B0522F"/>
+        <path d="M772 986 L862 928 L952 986 Z" fill="none" stroke="#7E3620" stroke-width="6"/>
+        <path d="M986 1016 L1058 972 L1130 1016 Z" fill="#8E6BC4"/>
+        <path d="M986 1016 L1058 972 L1130 1016 Z" fill="none" stroke="#5C4487" stroke-width="6"/>
+        <path d="M1466 1002 L1546 950 L1626 1002 Z" fill="#4C8FB8"/>
+        <path d="M1466 1002 L1546 950 L1626 1002 Z" fill="none" stroke="#2F6480" stroke-width="6"/>
       </g>
     </svg>
 
@@ -248,7 +268,7 @@
 <section class="screen" id="screen-missions" aria-label="Mission select">
   <div class="sheet">
     <div class="sheet__bar">
-      <button class="br-btn br-btn--ghost br-btn--sm" type="button" data-goto="title">← Menu</button>
+      <button class="br-btn br-btn--ghost br-btn--sm" type="button" data-goto="title"><span class="ar">&#8592;</span> Menu</button>
       <div class="grow">
         <h2 class="section-title">Piliin ang Misyon · Choose a Mission</h2>
         <p class="section-sub">Three calls from the barangay, played in order. Each one hands you a boat and a very short window.</p>
@@ -265,7 +285,7 @@
 <section class="screen" id="screen-prep" aria-label="Preparation phase">
   <div class="sheet">
     <div class="sheet__bar">
-      <button class="br-btn br-btn--ghost br-btn--sm" type="button" data-goto="missions">← Missions</button>
+      <button class="br-btn br-btn--ghost br-btn--sm" type="button" data-goto="missions"><span class="ar">&#8592;</span> Missions</button>
       <div class="grow">
         <h2 class="section-title">Paghahanda · Pack the Boat</h2>
         <p class="section-sub" id="prepSub">Every slot you fill is a slot you cannot fill with something else. Pack badly and the mission will show you why.</p>
@@ -292,7 +312,7 @@
         <div class="prep-actions">
           <button class="br-btn br-btn--sm br-btn--ghost" type="button" id="btnSuggest">Suggested Pack</button>
           <button class="br-btn br-btn--sm br-btn--ghost" type="button" id="btnClearPack">Clear</button>
-          <button class="br-btn br-btn--green" type="button" id="btnLaunch">Ilunsad · Launch →</button>
+          <button class="br-btn br-btn--green" type="button" id="btnLaunch">Ilunsad · Launch <span class="ar">&#8594;</span></button>
         </div>
       </aside>
     </div>
@@ -390,7 +410,7 @@
       <div class="report-actions">
         <button class="br-btn br-btn--ghost" type="button" id="repMenu">Menu</button>
         <button class="br-btn" type="button" id="repRetry">Ulitin · Retry</button>
-        <button class="br-btn br-btn--green" type="button" id="repNext">Susunod · Next Mission →</button>
+        <button class="br-btn br-btn--green" type="button" id="repNext">Susunod · Next Mission <span class="ar">&#8594;</span></button>
       </div>
     </div>
   </div>
@@ -599,7 +619,7 @@
     </div>
     <footer class="floater__foot">
       <button class="br-btn br-btn--sm br-btn--ghost" type="button" data-floater-close>Close</button>
-      <button class="br-btn br-btn--sm br-btn--green" type="button" id="howPlay">Play →</button>
+      <button class="br-btn br-btn--sm br-btn--green" type="button" id="howPlay">Play <span class="ar">&#8594;</span></button>
     </footer>
   </div>
 </div>

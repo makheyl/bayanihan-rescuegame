@@ -176,8 +176,45 @@
     var sc = at(Math.floor(spawn.x / TILE), Math.floor(spawn.y / TILE));
     if (sc && sc.t !== T.WATER && sc.t !== T.DOCK) { sc.t = T.WATER; sc.elev = 0; }
 
+    /* Connectivity guarantee.
+       Debris is placed at random and can seal a two-wide lane, which would
+       strand any resident whose only approach is behind the blockage — the
+       boat reaches the far side, sits at full throttle and the mission
+       stalls. Flood-fill the navigable water from the launch point at
+       waterLevel 0 (the most restrictive moment; rising water only ever opens
+       more up) and record it, so the roster can refuse to spawn anyone the
+       bangka could never actually reach. */
+    var reachable = new Uint8Array(cols * rows);
+    (function floodFromSpawn() {
+      var sx = Math.floor(spawn.x / TILE), sy = Math.floor(spawn.y / TILE);
+      var start = idx(sx, sy);
+      if (!passable(cells[start], 0)) return;
+      var queue = [start];
+      reachable[start] = 1;
+      var head = 0;
+      var dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+      while (head < queue.length) {
+        var cur = queue[head++];
+        var cx2 = cur % cols, cy2 = (cur / cols) | 0;
+        for (var di = 0; di < 4; di++) {
+          var nx2 = cx2 + dirs[di][0], ny2 = cy2 + dirs[di][1];
+          if (nx2 < 0 || ny2 < 0 || nx2 >= cols || ny2 >= rows) continue;
+          var ni2 = idx(nx2, ny2);
+          if (reachable[ni2]) continue;
+          if (!passable(cells[ni2], 0)) continue;
+          reachable[ni2] = 1;
+          queue.push(ni2);
+        }
+      }
+    })();
+
     return {
       cols: cols, rows: rows, tile: TILE,
+      reachable: reachable,
+      isReachable: function (x, y) {
+        if (x < 0 || y < 0 || x >= cols || y >= rows) return false;
+        return !!reachable[idx(x, y)];
+      },
       w: cols * TILE, h: rows * TILE,
       cells: cells,
       at: at, idx: idx,

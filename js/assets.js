@@ -214,41 +214,55 @@
   /* ------------------------------------------------------------------
      TILES
      ------------------------------------------------------------------ */
-  function drawRoof(c, x, y, s, cell, submergence) {
+  /* A house occupies several tiles, so each tile draws only the roof surface
+     and adds a ridge or an eave shadow where the building actually ends.
+     Drawing a roof-plus-wall on every tile turns one house into a stack of
+     stripes. `nb` says which of the four neighbours belong to the same house. */
+  function drawRoof(c, x, y, s, cell, submergence, nb) {
     var pal = [
       [P.roofA, P.roofADark], [P.roofB, P.roofBDark],
       [P.roofC, P.roofCDark], [P.roofD, P.roofDDark]
     ][cell.variant % 4];
+    nb = nb || {};
 
     c.save();
     c.translate(x, y);
 
-    // wall band showing how much is still above the waterline
-    var above = 1 - submergence;
-    c.fillStyle = P.concrete;
-    c.fillRect(0, s * 0.34, s, s * 0.66);
-    c.fillStyle = P.concreteDark;
-    c.fillRect(0, s * 0.34, s, s * 0.10);
-
+    // roof surface, seen from above
     c.fillStyle = pal[0];
-    c.fillRect(0, 0, s, s * 0.40);
-    c.fillStyle = pal[1];
-    c.fillRect(0, s * 0.32, s, s * 0.08);
+    c.fillRect(0, 0, s, s);
 
-    // ridge line
-    c.strokeStyle = 'rgba(255,255,255,.20)'; c.lineWidth = Math.max(1, s * 0.04);
-    c.beginPath(); c.moveTo(0, s * 0.16); c.lineTo(s, s * 0.16); c.stroke();
+    // corrugation
+    c.strokeStyle = 'rgba(0,0,0,.09)';
+    c.lineWidth = 1;
+    for (var i = 1; i < 4; i++) {
+      c.beginPath();
+      c.moveTo(0, Math.round(i * s / 4) + 0.5);
+      c.lineTo(s, Math.round(i * s / 4) + 0.5);
+      c.stroke();
+    }
 
-    // waterline creeping up the wall, plus a wave hatch so the state is
-    // never communicated by colour alone
+    // ridge cap along the top edge of the building
+    if (!nb.up) {
+      c.fillStyle = pal[1];
+      c.fillRect(0, 0, s, s * 0.17);
+      c.fillStyle = 'rgba(255,255,255,.24)';
+      c.fillRect(0, s * 0.17, s, s * 0.045);
+    }
+    // eaves — a cast shadow on the far edges gives the block volume
+    if (!nb.down)  { c.fillStyle = 'rgba(0,0,0,.30)';       c.fillRect(0, s * 0.84, s, s * 0.16); }
+    if (!nb.right) { c.fillStyle = 'rgba(0,0,0,.17)';       c.fillRect(s * 0.87, 0, s * 0.13, s); }
+    if (!nb.left)  { c.fillStyle = 'rgba(255,255,255,.11)'; c.fillRect(0, 0, s * 0.09, s); }
+
+    // The flood coming over the roof gets a wave hatch as well as a tint, so
+    // the state is never communicated by colour alone.
     if (submergence > 0) {
-      var wl = s * (1 - submergence * 0.85);
-      c.fillStyle = 'rgba(62,146,168,.55)';
-      c.fillRect(0, wl, s, s - wl);
-      c.strokeStyle = 'rgba(228,250,255,.55)'; c.lineWidth = 1.4;
-      for (var i = 0; i < 3; i++) {
-        var yy = wl + 4 + i * 7;
-        if (yy > s - 2) break;
+      c.fillStyle = 'rgba(62,146,168,' + (0.22 + 0.52 * submergence).toFixed(3) + ')';
+      c.fillRect(0, 0, s, s);
+      c.strokeStyle = 'rgba(228,250,255,' + (0.35 + 0.4 * submergence).toFixed(3) + ')';
+      c.lineWidth = 1.5;
+      for (var w = 0; w < 3; w++) {
+        var yy = s * (0.22 + w * 0.28);
         c.beginPath();
         c.moveTo(2, yy);
         c.quadraticCurveTo(s * 0.25, yy - 3, s * 0.5, yy);
@@ -257,7 +271,7 @@
       }
     }
     c.restore();
-    return above;
+    return 1 - submergence;
   }
 
   function drawTree(c, x, y, s, cell) {

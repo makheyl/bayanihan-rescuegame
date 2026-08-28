@@ -100,6 +100,8 @@ js/
 assets/maps/               README only — layouts are generated, see above
 assets/audio/              README only — all audio is synthesised
 BAYANIHAN_ELEMENTS/        delivered reference art (not shipped as sprites)
+tools/                     Node-only verification harness; never loaded by the
+                           game — see tools/README.md
 ```
 
 ---
@@ -133,16 +135,52 @@ context action · `1`–`5` use packed supplies · `Esc` pauses. Touch controls
 
 ## Status
 
-Every screen, system and module described above is implemented and wired.
+Every screen, system and module described above is implemented, wired and
+verified. The boat-wedging problem noted in the previous commit is fixed.
 
-**Known issue — boat collision wedging.** A headless simulation harness
-(`node` + a BFS-pathfinding pilot driving the real game modules) shows the boat
-jamming against geometry: 150–190 stuck events per mission and an average speed
-of 25–49 px/s against a 178 px/s cap. Missions therefore tend to end on the
-flood timer with low rescue counts rather than on a cleared roster, and the
-2–4 minute target is not yet met. `unstick()` in `js/game.js` recovers the hull
-when it ends a step *inside* geometry, but something is still stalling it — this
-was mid-diagnosis when the build was committed and is the next thing to fix.
+### Measured balance
 
-Balance numbers, roster composition and supply gating are all verifiable by
-re-running that harness.
+Median of 5 runs per configuration, from `node tools/bench.js . 5`:
+
+| Mission | Recommended pack | Empty pack | Without flashlight |
+|---|---|---|---|
+| 1 · The Water Rises | **98s**, 10/10 saved, 4 ferry trips | 198s, 5/10 | — (daylight) |
+| 2 · The Missing | **176s**, 10/11 | 200s, 3/11 | 184s, 9/11 |
+| 3 · The Last Boat | **125s**, 11/13 | 195s, 3/13 | 183s, 7/13 |
+
+Mission 3 without the radyo drops to 6/13. Read those times as a **floor**: the
+benchmark pilot paths with BFS and reacts instantly, so a person plays slower,
+and every mission is capped by its own flood clock (205 / 200 / 195s) regardless.
+
+### What the diagnosis turned up
+
+Four real bugs, all found by instrumenting the simulation rather than by
+guessing, and all fixed:
+
+1. **Rescue reach was shorter than the boat could physically get.** A resident
+   spawned at the centre of a roof tile sits ~73px from the nearest water the
+   hull can occupy, against a 62px reach — so they could never be taken and the
+   mission stalled at full throttle. Residents now stand at the roof *edge*
+   facing navigable water, and reach went to 72px.
+2. **Debris could seal a lane.** Random wreckage across a two-wide street could
+   cut a resident off entirely. The generator now flood-fills navigable water
+   from the launch point and refuses to spawn anyone it cannot reach.
+3. **A stagger froze steering.** Clipping a corner removed thrust *and* turning
+   for 0.55s, so the boat could not turn off the thing it had just hit — 77% of
+   frames were staggered in one run. Steering now always responds; a knock costs
+   speed (38% thrust) for 0.4s.
+4. **Passengers fell overboard on nearly every graze.** A 40% roll above 130px/s
+   meant 16 of 23 pickups were lost in one run. Now 15% above 168px/s.
+
+Two tuning changes followed: roof elevations were raised so the lowest house
+floods at ~38% of the mission instead of 30% (the old values wiped the roster
+before a player could reach anyone), and the lightning reveal radius was cut
+from 900px to 380px because revealing the neighbourhood every few seconds was
+doing the flashlight's job for free and gutting Mission 2's lesson.
+
+### Verified in a browser
+
+Rendered headlessly and inspected: title screen, mission select with gating and
+minimap previews, preparation phase, Mission 1 daylight gameplay, Mission 2
+night gameplay (flashlight cone, halo, spotted-resident banner), the
+After-Action Report, and the How to Play floater.

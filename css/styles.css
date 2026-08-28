@@ -353,6 +353,10 @@ table.tbl th { font-family:var(--font-display); font-size:8px; letter-spacing:.0
 /* =====================================================================
    Shared bilingual label block
    ===================================================================== */
+/* Press Start 2P carries no arrow glyphs, so an inline ← or → falls back to a
+   broken box. Render arrows in the body face instead. */
+.ar { font-family:var(--font-body); font-weight:900; }
+
 .bi { line-height:1.35; }
 .bi b   { display:block; font-family:var(--font-display); font-size:.78em; letter-spacing:.04em; }
 .bi span{ display:block; font-size:.82em; opacity:.72; font-weight:700; }

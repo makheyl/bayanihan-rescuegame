@@ -148,7 +148,9 @@
 
     var launch = document.getElementById('btnLaunch');
     launch.disabled = false;
-    launch.textContent = p.length === 0 ? 'Ilunsad · Launch with nothing →' : 'Ilunsad · Launch →';
+    // arrows go in the body face — the pixel display font has no glyph for them
+    launch.innerHTML = (p.length === 0 ? 'Ilunsad · Launch empty' : 'Ilunsad · Launch') +
+                       ' <span class="ar">&#8594;</span>';
 
     drawBoat();
   }

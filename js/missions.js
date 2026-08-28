@@ -19,13 +19,15 @@
       brief: 'The creek jumped its banks before dawn. Families are on their roofs and in the mango trees, waving at anything that floats.',
       teaches: 'Movement, boat capacity and the run back to the evacuation center.',
       difficulty: 1,
-      cols: 34, rows: 24,
+      cols: 37, rows: 26,
       slots: 4,
       duration: 205,
       dark: 0, rain: 0.25, wind: 0.12,
       wires: 0,
       currentLanes: 2,
-      roster: { total: 9, water: 2, debris: 1, injured: 1 },
+      // 10 residents at a capacity of 3 forces four runs to the evacuation
+      // center, which is what pushes a clean playthrough past two minutes.
+      roster: { total: 10, water: 2, debris: 1, injured: 1 },
       recommended: ['salbabida', 'botika', 'lubid', 'tubig']
     },
     {

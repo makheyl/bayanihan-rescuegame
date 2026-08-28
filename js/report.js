@@ -117,9 +117,13 @@
     });
     var left = BR.supplies.list.filter(function (d) { return inv.packed.indexOf(d.id) === -1; });
     if (left.length) {
-      sup.innerHTML += '<div class="rrow" style="border-top:2px solid var(--paper-line); margin-top:.5em; padding-top:.7em">' +
-        '<span style="opacity:.72">Left behind</span><b style="font-size:9px; text-align:right">' +
-        left.map(function (d) { return d.fil; }).join(' · ') + '</b></div>';
+      // chips rather than a display-font run: four Filipino names will not fit
+      // on one line in the pixel face
+      sup.innerHTML += '<div style="border-top:2px solid var(--paper-line); margin-top:.6em; padding-top:.75em">' +
+        '<div style="opacity:.72; font-weight:800; font-size:12.5px; margin-bottom:.45em">Left behind</div>' +
+        '<div class="rec-row">' +
+        left.map(function (d) { return '<span class="rec-chip">' + d.fil + '</span>'; }).join('') +
+        '</div></div>';
     }
 
     /* ---------------- the lessons ---------------- */
@@ -137,7 +141,7 @@
     var nextBtn = document.getElementById('repNext');
     if (nextM && BR.state.progress.unlocked >= nextM.index) {
       nextBtn.disabled = false;
-      nextBtn.textContent = 'Susunod · ' + nextM.eng + ' →';
+      nextBtn.innerHTML = 'Susunod · ' + nextM.eng + ' <span class="ar">&#8594;</span>';
       nextBtn.onclick = function () { BR.audio.play('click'); BR.prep.open(nextM); };
     } else if (nextM) {
       nextBtn.disabled = true;

@@ -13,7 +13,9 @@
 
   var CAPACITY = 3;             // residents the bangka can carry
   var CRITICAL = 0.70;          // water level at which everything escalates
-  var REACH = 62;               // rescue reach in px
+  var REACH = 72;               // rescue reach in px — must comfortably exceed
+                                // the closest the hull can get to a roof edge
+                                // (one tile away, 48px, less the edge offset)
   var BOAT_R = 17;
 
   var ACCEL = 640, DRAG = 1.95, MAX_SPD = 178, SPRINT_MUL = 1.52, TURN = 6.4;
@@ -194,11 +196,15 @@
     var iv = keyVec();
     var sprinting = sprintHeld() && b.stamina > 1 && iv.m > 0.15 && b.stagger <= 0;
 
-    if (iv.m > 0.08 && b.stagger <= 0) {
+    if (iv.m > 0.08) {
       var desired = Math.atan2(iv.y, iv.x);
+      // Steering always responds, even mid-stagger. A knock costs you speed;
+      // it must never cost you the ability to turn off the thing you hit,
+      // or a clipped corner becomes an unrecoverable wedge.
       b.ang = BR.angleLerp(b.ang, desired, 1 - Math.exp(-TURN * dt));
       var align = Math.max(0, Math.cos(b.ang - desired));
-      var thrust = ACCEL * iv.m * align * (sprinting ? SPRINT_MUL : 1);
+      var thrust = ACCEL * iv.m * align * (sprinting ? SPRINT_MUL : 1) *
+                   (b.stagger > 0 ? 0.38 : 1);
       b.vx += Math.cos(b.ang) * thrust * dt;
       b.vy += Math.sin(b.ang) * thrust * dt;
     }
@@ -278,7 +284,7 @@
 
   function onImpact(sp) {
     if (sp < 110 || g.boat.stagger > 0) return;
-    g.boat.stagger = 0.55;
+    g.boat.stagger = 0.4;
     g.shake += Math.min(16, sp * 0.09);
     BR.audio.play('bump');
     spawnSplash(g.boat.x, g.boat.y, 10);
@@ -366,10 +372,13 @@
       w.nextFlash = BR.lerp(16, 6, tension) + Math.random() * 6;
       w.flash = 1;
       BR.audio.play('thunder');
-      // lightning briefly reveals the barangay — everyone on screen is spotted
+      // A lightning flash lights the whole scene, but it only fixes someone's
+      // position in your memory if they were close enough to make out. Keep
+      // this radius tight: revealing the neighbourhood every few seconds would
+      // do the flashlight's job for free and gut the lesson of Mission 2.
       for (var i = 0; i < g.roster.length; i++) {
         var r = g.roster[i];
-        if (r.state === 'waiting' && BR.dist(r.x, r.y, g.boat.x, g.boat.y) < 900) r.found = true;
+        if (r.state === 'waiting' && BR.dist(r.x, r.y, g.boat.x, g.boat.y) < 380) r.found = true;
       }
     }
 
@@ -385,9 +394,11 @@
     var hasCoat = inv.packed.indexOf('kapote') !== -1;
 
     var rainPenalty = g.weather.rain * (hasCoat ? 0.10 : 0.26);
-    var len = (hasTorch ? 470 : 180) * (1 - rainPenalty);
+    // Unpacked, you are squinting down a short narrow beam; packed, the cone is
+    // ~3x longer and twice as wide. That gap is the whole argument of Mission 2.
+    var len = (hasTorch ? 470 : 150) * (1 - rainPenalty);
     var half = hasTorch ? 0.98 : 0.44;
-    var halo = hasTorch ? 130 : 96;         // the little pool of light around the boat
+    var halo = hasTorch ? 130 : 72;         // the little pool of light around the boat
     return { len: len, half: half, halo: halo, dark: m.dark, torch: hasTorch };
   }
 

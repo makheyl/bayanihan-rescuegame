@@ -44,9 +44,13 @@
       var wx = c.x * TILE + TILE / 2, wy = c.y * TILE + TILE / 2;
       if (BR.dist(wx, wy, map.dockCx, map.dockCy) < TILE * 4) continue;
 
+      // Only ever spawn someone the bangka can actually get to. touchesOpenWater
+      // now demands water that is connected to the launch point, not merely
+      // water that happens to be adjacent.
       if (c.t === T.ROOF && touchesOpenWater(map, c)) {
         roofSpots.push(c);
-      } else if (c.t === T.WATER && !c.cx && !c.cy && touchesOpenWater(map, c)) {
+      } else if (c.t === T.WATER && !c.cx && !c.cy &&
+                 map.isReachable(c.x, c.y) && touchesOpenWater(map, c)) {
         if (nextToDebris(map, c)) debrisSpots.push(c);
         else waterSpots.push(c);
       }
@@ -78,12 +82,30 @@
       return 'adult';
     }
 
+    /* Someone stranded on a roof stands at the edge facing the water, not in
+       the middle of the slab. That is both how a person actually waits for a
+       boat and a hard requirement: the hull can only reach the neighbouring
+       water tile, and from a roof centre that is 48px plus jitter away —
+       further than the rescue reach, which strands them permanently. */
+    function edgeOffset(cell) {
+      var d = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+      for (var i = 0; i < 4; i++) {
+        var nx = cell.x + d[i][0], ny = cell.y + d[i][1];
+        var n = map.at(nx, ny);
+        if (n && (n.t === T.WATER || n.t === T.DOCK) && map.isReachable(nx, ny)) {
+          return { ox: d[i][0] * 15, oy: d[i][1] * 15 };
+        }
+      }
+      return { ox: 0, oy: 0 };
+    }
+
     function push(cell, situation) {
       var tag = tagFor(situation);
       var t = TAGS[tag];
       var need = situation === 'water' ? NEED_PIP.water
                : situation === 'debris' ? NEED_PIP.debris
                : (tag === 'injured' ? NEED_PIP.injured : null);
+      var off = situation === 'roof' ? edgeOffset(cell) : { ox: 0, oy: 0 };
       roster.push({
         id: 'r' + (id++),
         name: names[id % names.length] || 'Kapitbahay',
@@ -91,8 +113,8 @@
         situation: situation,
         state: 'waiting',                       // waiting | aboard | safe | lost
         cell: cell,
-        x: cell.x * TILE + TILE / 2 + R.range(-8, 8),
-        y: cell.y * TILE + TILE / 2 + R.range(-8, 8),
+        x: cell.x * TILE + TILE / 2 + off.ox + R.range(-5, 5),
+        y: cell.y * TILE + TILE / 2 + off.oy + R.range(-5, 5),
         score: t.score,
         timer: t.timer, timerMax: t.timer,
         need: need,
@@ -138,8 +160,9 @@
   function touchesOpenWater(map, c) {
     var d = [[1, 0], [-1, 0], [0, 1], [0, -1]];
     for (var i = 0; i < 4; i++) {
-      var n = map.at(c.x + d[i][0], c.y + d[i][1]);
-      if (n && (n.t === T.WATER || n.t === T.DOCK)) return true;
+      var nx = c.x + d[i][0], ny = c.y + d[i][1];
+      var n = map.at(nx, ny);
+      if (n && (n.t === T.WATER || n.t === T.DOCK) && map.isReachable(nx, ny)) return true;
     }
     return false;
   }

@@ -169,6 +169,14 @@
   /* ------------------------------------------------------------------
      TILES
      ------------------------------------------------------------------ */
+  /* Two roof tiles belong to the same building when they share elevation and
+     colour variant. A neighbour already lost to the flood counts as absent, so
+     the part still standing gets its own ridge and eaves. */
+  function sameHouse(a, b, wl) {
+    return !!b && b.t === T.ROOF && b.elev === a.elev && b.variant === a.variant &&
+           BR.maps.submergence(b, wl) < 1;
+  }
+
   function drawTiles(g, v, t) {
     var wl = g.missionState.waterLevel;
     for (var y = v.y0; y <= v.y1; y++) {
@@ -188,7 +196,12 @@
             c.restore();
             continue;
           }
-          BR.art.drawRoof(c, px, py, TILE, cell, sub);
+          BR.art.drawRoof(c, px, py, TILE, cell, sub, {
+            up:    sameHouse(cell, g.map.at(x, y - 1), wl),
+            down:  sameHouse(cell, g.map.at(x, y + 1), wl),
+            left:  sameHouse(cell, g.map.at(x - 1, y), wl),
+            right: sameHouse(cell, g.map.at(x + 1, y), wl)
+          });
         } else if (cell.t === T.TREE) {
           BR.art.drawTree(c, px, py, TILE, cell);
         } else if (cell.t === T.DEBRIS) {
